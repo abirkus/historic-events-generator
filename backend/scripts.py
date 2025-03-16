@@ -6,4 +6,4 @@ def dev():
     # Load environment variables from .env
     load_dotenv()
     # Run the FastAPI dev command directly
-    subprocess.run(["fastapi", "dev", "app/main.py"], check=True)
+    subprocess.run(["fastapi", "dev", "main.py"], check=True)
