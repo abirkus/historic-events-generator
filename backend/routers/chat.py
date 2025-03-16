@@ -26,22 +26,20 @@ class ChatResponse(BaseModel):
     provider: str
 
 
-# Dependency to get the AI service
 async def get_service(request: ChatRequest = None) -> AIService:
     settings = get_settings()
 
-    # Determine provider - from request, env var, or default
     provider = (
         request.provider
         if request and request.provider
-        else os.getenv("DEFAULT_AI_PROVIDER", "openai")
+        else settings.default_ai_provider
     )
 
     # Get the appropriate API key
     if provider.lower() == "openai":
-        api_key = os.getenv("OPENAI_API_KEY")
+        api_key = settings.openai_api_key
     elif provider.lower() == "gemini":
-        api_key = os.getenv("GEMINI_API_KEY")
+        api_key = settings.gemini_api_key
     else:
         raise HTTPException(status_code=400, detail=f"Unsupported provider: {provider}")
 
