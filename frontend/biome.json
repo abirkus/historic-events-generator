@@ -6,9 +6,8 @@
 		"useIgnoreFile": false
 	},
 	"files": {
-		"ignore": [
-			"node_modules"
-		]
+		"ignore": ["node_modules"],
+		"include": ["./src/*"]
 	},
 	"organizeImports": {
 		"enabled": true
@@ -20,13 +19,26 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"suspicious": {
+				"noExplicitAny": "off",
+				"noArrayIndexKey": "off"
+			},
+			"style": {
+				"noNonNullAssertion": "off"
+			}
 		}
 	},
 	"javascript": {
+		"jsxRuntime": "transparent",
 		"formatter": {
 			"quoteStyle": "double",
 			"semicolons": "asNeeded"
+		}
+	},
+	"json": {
+		"formatter": {
+			"enabled": true
 		}
 	}
 }
