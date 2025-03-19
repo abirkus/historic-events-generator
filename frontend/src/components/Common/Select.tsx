@@ -1,55 +1,49 @@
 "use client"
 
 import {
-	For,
-	Portal,
-	Select,
-	Stack,
-	createListCollection,
+    Portal,
+    Select,
+    Stack,
+    createListCollection,
 } from "@chakra-ui/react"
 
 const SelectModel = () => {
-	return (
-		<Stack gap="5" width="320px">
-			<For each={["xs", "sm", "md", "lg"]}>
-				{(size) => (
-					<Select.Root key={size} size={size} collection={frameworks}>
-						<Select.HiddenSelect />
-						<Select.Label>size = {size}</Select.Label>
-						<Select.Control>
-							<Select.Trigger>
-								<Select.ValueText placeholder="Select framework" />
-							</Select.Trigger>
-							<Select.IndicatorGroup>
-								<Select.Indicator />
-							</Select.IndicatorGroup>
-						</Select.Control>
-						<Portal>
-							<Select.Positioner>
-								<Select.Content>
-									{frameworks.items.map((framework) => (
-										<Select.Item item={framework} key={framework.value}>
-											{framework.label}
-											<Select.ItemIndicator />
-										</Select.Item>
-									))}
-								</Select.Content>
-							</Select.Positioner>
-						</Portal>
-					</Select.Root>
-				)}
-			</For>
-		</Stack>
-	)
+    return (
+        <Stack gap="5" width="320px">
+            <Select.Root size={"lg"} collection={models}>
+                <Select.HiddenSelect />
+                <Select.Label>AI Model</Select.Label>
+                <Select.Control>
+                    <Select.Trigger>
+                        <Select.ValueText placeholder="Select AI model" />
+                    </Select.Trigger>
+                    <Select.IndicatorGroup>
+                        <Select.Indicator />
+                    </Select.IndicatorGroup>
+                </Select.Control>
+                <Portal>
+                    <Select.Positioner>
+                        <Select.Content>
+                            {models.items.map((model) => (
+                                <Select.Item item={model} key={model.value}>
+                                    {model.label}
+                                    <Select.ItemIndicator />
+                                </Select.Item>
+                            ))}
+                        </Select.Content>
+                    </Select.Positioner>
+                </Portal>
+            </Select.Root>
+
+        </Stack>
+    )
 }
 
-const frameworks = createListCollection({
-	items: [
-		{ label: "React.js", value: "react" },
-		{ label: "Vue.js", value: "vue" },
-		{ label: "Angular", value: "angular" },
-		{ label: "Svelte", value: "svelte" },
-	],
+const models = createListCollection({
+    items: [
+        { label: "OpenAI", value: "gpt-4o-mini" },
+        { label: "Gemini", value: "google" },
+    ],
 })
 
 export default SelectModel
