@@ -1,31 +1,24 @@
 import Header from "../../components/Header/Header";
-import { useEffect, useState } from "react";
-import MultiSelect from "../../components/MultiSelect/MultiSelect";
 
 import { AxiosApiClient } from "../../services/api/AxiosApiClient";
-import { DevicesService } from "../../services/devices/DevicesService";
-import {
-  Box,
-  FormControl,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
+import { LLMProviderService } from "../../services/llmProviders/LLMProviderService";
+import { Box, InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { useEffect } from "react";
 
 const apiClient = new AxiosApiClient(import.meta.env.VITE_SERVER_API_BASE_URL);
-const deviceService = new DevicesService(apiClient);
-
-const sortOptions = [
-  "HDD Capacity (descending)",
-  "HDD Capacity (ascending)",
-  "Name (A-Z)",
-  "Name (Z-A)",
-];
+const llmService = new LLMProviderService(apiClient);
 
 const Home = () => {
+  useEffect(() => {
+    getAllModels();
+  }, []);
+
+  const getAllModels = async () => {
+    const data = await llmService.fetchAvailableModels();
+    console.log(data);
+  };
+
   return (
     <>
       <Header />
