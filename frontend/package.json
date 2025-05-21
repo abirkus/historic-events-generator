@@ -23,7 +23,9 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.4",
     "@mui/material": "^6.4.4",
+    "@mui/x-date-pickers": "^8.4.0",
     "axios": "^1.7.9",
+    "dayjs": "^1.11.13",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "vite-plugin-svgr": "^4.3.0"
