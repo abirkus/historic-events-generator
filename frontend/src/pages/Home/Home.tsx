@@ -3,24 +3,35 @@ import Header from "../../components/Header/Header";
 import { AxiosApiClient } from "../../services/api/AxiosApiClient";
 import dayjs from "dayjs";
 import { LLMProviderService } from "../../services/llmProviders/LLMProviderService";
-import { Box } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const apiClient = new AxiosApiClient(import.meta.env.VITE_SERVER_API_BASE_URL);
 const llmService = new LLMProviderService(apiClient);
 
 const Home = () => {
-  useEffect(() => {
-    getAllModels();
-  }, []);
+  const [availableModels, setAvailableModels] = useState<string[]>([]);
 
-  const getAllModels = async () => {
-    const data = await llmService.fetchAvailableModels();
-    console.log(data);
-  };
+  useEffect(() => {
+    const getAllModels = async () => {
+      const data = await llmService.fetchAvailableModels();
+      console.log(data);
+    };
+
+    const result = getAllModels().catch((error) => {
+      console.error("Error fetching models:", error);
+    });
+    setAvailableModels(result);
+  }, []);
 
   return (
     <>
@@ -39,12 +50,30 @@ const Home = () => {
           </h3>
         </div>
 
-        <div className="flex items-center ">
+        <div className="flex items-center flex-col">
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">AI Model name</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              label="Select Model"
+            >
+              {availableModels.length > 0 &&
+                availableModels.map((model: string) => (
+                  <MenuItem key={model} value={model}>
+                    {model}
+                  </MenuItem>
+                ))}
+            </Select>
+          </FormControl>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={["DatePicker"]}>
               <DatePicker defaultValue={dayjs(Date.now())} />
             </DemoContainer>
           </LocalizationProvider>
+          <Button variant="contained" sx={{ m: 2 }}>
+            What happened then?
+          </Button>
         </div>
       </div>
     </>
