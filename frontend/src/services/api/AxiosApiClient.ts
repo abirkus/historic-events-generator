@@ -14,8 +14,12 @@ export class AxiosApiClient implements ApiClient {
   private httpClient: AxiosInstance;
 
   constructor(baseURL: string) {
+    if (!baseURL) {
+      throw new Error("Base URL is required");
+    }
+    const url = baseURL.concat("/api");
     this.httpClient = axios.create({
-      baseURL,
+      url,
       timeout: 10000,
       headers: { "Content-Type": "application/json" },
     });

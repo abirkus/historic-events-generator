@@ -51,6 +51,14 @@ async def get_service(request: ChatRequest = None) -> AIService:
     return get_ai_service(provider, api_key)
 
 
+@router.get("/models", response_model=List[str])
+async def get_provider_models():
+    """
+    Get the list of available AI providers.
+    """
+    return ["openai", "gemini"]
+
+
 @router.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest, service: AIService = Depends(get_service)):
     try:
