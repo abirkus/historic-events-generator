@@ -67,12 +67,7 @@ const Home = () => {
         // Handle the error, e.g., show a notification to the user
       });
   };
-  console.log(
-    "Selected Model:",
-    selectedModel,
-    "Selected Date:",
-    selectedDate?.format("YYYY-MM-DD")
-  );
+
   return (
     <>
       <Header />
