@@ -1,7 +1,7 @@
 import Header from "../../components/Header/Header";
 
 import { AxiosApiClient } from "../../services/api/AxiosApiClient";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { LLMProviderService } from "../../services/llmProviders/LLMProviderService";
 import {
   Button,
@@ -14,25 +14,65 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { useEffect, useState } from "react";
+import type { SelectChangeEvent } from "@mui/material/Select";
+import HistoricEventsCard from "../../components/Header/EventCard";
 
 const apiClient = new AxiosApiClient(import.meta.env.VITE_SERVER_API_BASE_URL);
 const llmService = new LLMProviderService(apiClient);
 
 const Home = () => {
   const [availableModels, setAvailableModels] = useState<string[]>([]);
+  const [selectedModel, setSelectedModel] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
+    dayjs(Date.now())
+  );
+
+  const [response, setResponse] = useState<string>("");
 
   useEffect(() => {
     const getAllModels = async () => {
       const data = await llmService.fetchAvailableModels();
       console.log(data);
+      if (!data || data.length === 0) {
+        return [];
+      }
+      return data;
     };
 
-    const result = getAllModels().catch((error) => {
-      console.error("Error fetching models:", error);
-    });
-    setAvailableModels(result);
+    getAllModels()
+      .then((res) => {
+        setAvailableModels(res);
+      })
+      .catch((error) => {
+        console.error("Error fetching models:", error);
+      });
   }, []);
 
+  const handleModelChange = (event: SelectChangeEvent) => {
+    setSelectedModel(event.target.value as string);
+  };
+
+  const handleSubmit = async () => {
+    llmService
+      .queryForModel({
+        provider: selectedModel,
+        date: selectedDate?.format("MM-DD") || "",
+      })
+      .then((response) => {
+        console.log("Generated Events:", response);
+        setResponse(response);
+      })
+      .catch((error) => {
+        console.error("Error generating events:", error);
+        // Handle the error, e.g., show a notification to the user
+      });
+  };
+  console.log(
+    "Selected Model:",
+    selectedModel,
+    "Selected Date:",
+    selectedDate?.format("YYYY-MM-DD")
+  );
   return (
     <>
       <Header />
@@ -57,23 +97,28 @@ const Home = () => {
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               label="Select Model"
+              onChange={(e: SelectChangeEvent) => handleModelChange(e)}
             >
-              {availableModels.length > 0 &&
-                availableModels.map((model: string) => (
-                  <MenuItem key={model} value={model}>
-                    {model}
-                  </MenuItem>
-                ))}
+              {availableModels.map((model: string) => (
+                <MenuItem key={model} value={model}>
+                  {model}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={["DatePicker"]}>
-              <DatePicker defaultValue={dayjs(Date.now())} />
+              <DatePicker
+                value={selectedDate}
+                onChange={(newValue) => setSelectedDate(newValue)}
+              />
             </DemoContainer>
           </LocalizationProvider>
-          <Button variant="contained" sx={{ m: 2 }}>
-            What happened then?
+          <Button variant="contained" sx={{ m: 2 }} onClick={handleSubmit}>
+            Generate Events
           </Button>
+
+          <div>{HistoricEventsCard(response)}</div>
         </div>
       </div>
     </>
