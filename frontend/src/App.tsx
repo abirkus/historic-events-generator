@@ -1,11 +1,21 @@
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Home from "./pages/Home/Home";
-
-// here we can set up browser router if we have more pages and routes
-// as well as global context providers or redux store
+import About from "./pages/About/About";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 const App = () => {
-  return <Home />;
+  return (
+    <Router>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+      <Footer />
+    </Router>
+  );
 };
 
 export default App;
