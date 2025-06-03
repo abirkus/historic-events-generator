@@ -70,8 +70,6 @@ async def chat(request: ChatRequest, service: AIService = Depends(get_service)):
         response_text = await service.chat_completion(
             messages=messages, temperature=request.temperature
         )
-
-        print(f"Chat response from {service.__class__.__name__}: {response_text}")
         return ChatResponse(
             response=response_text,
             provider=service.__class__.__name__.replace("Service", ""),
