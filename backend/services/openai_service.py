@@ -10,7 +10,7 @@ class OpenAIService(AIService):
     async def chat_completion(
         self,
         messages: List[Dict[str, str]],
-        model: Optional[str] = "gpt-4",
+        model: Optional[str] = "gpt-4o-mini",
         temperature: Optional[float] = 0.7,
     ) -> str:
         response = self.client.chat.completions.create(

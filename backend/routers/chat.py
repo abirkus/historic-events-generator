@@ -16,7 +16,6 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: List[ChatMessage]
-    model: Optional[str] = None
     temperature: Optional[float] = 0.7
     provider: Optional[str] = None  # Allow overriding default provider
 
@@ -69,9 +68,8 @@ async def chat(request: ChatRequest, service: AIService = Depends(get_service)):
 
         # Use the service to get a response
         response_text = await service.chat_completion(
-            messages=messages, model=request.model, temperature=request.temperature
+            messages=messages, temperature=request.temperature
         )
-
         return ChatResponse(
             response=response_text,
             provider=service.__class__.__name__.replace("Service", ""),
