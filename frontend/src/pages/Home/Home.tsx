@@ -1,6 +1,6 @@
 import { AxiosApiClient } from "../../services/api/AxiosApiClient";
-import dayjs, { Dayjs } from "dayjs";
 import { LLMProviderService } from "../../services/llmProviders/LLMProviderService";
+import dayjs, { Dayjs } from "dayjs";
 import {
   Button,
   FormControl,
@@ -13,9 +13,6 @@ import {
   Paper,
   Container,
 } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { useEffect, useState } from "react";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import CalendarImage from "../../assets/calendar-thinking.png";
@@ -38,6 +35,30 @@ const VINTAGE_FONTS = {
   serif: "'Old Standard TT', 'Times New Roman', serif",
   decorative: "'Cinzel', 'Times New Roman', serif",
 } as const;
+
+// Date options
+const MONTHS = [
+  { value: "01", label: "January" },
+  { value: "02", label: "February" },
+  { value: "03", label: "March" },
+  { value: "04", label: "April" },
+  { value: "05", label: "May" },
+  { value: "06", label: "June" },
+  { value: "07", label: "July" },
+  { value: "08", label: "August" },
+  { value: "09", label: "September" },
+  { value: "10", label: "October" },
+  { value: "11", label: "November" },
+  { value: "12", label: "December" },
+];
+
+const DAYS = Array.from({ length: 31 }, (_, i) => {
+  const day = i + 1;
+  return {
+    value: day.toString().padStart(2, "0"),
+    label: day.toString(),
+  };
+});
 
 // Vintage component styling
 const vintageContainerSx = {
@@ -178,7 +199,7 @@ const dateControlsSx = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  gap: 2,
+  gap: 3,
 };
 
 const promptTextSx = {
@@ -188,6 +209,15 @@ const promptTextSx = {
   fontSize: { xs: "1.2rem", md: "1.5rem" },
   textAlign: "center",
   letterSpacing: "0.05em",
+};
+
+const dateSelectorsContainerSx = {
+  display: "flex",
+  flexDirection: { xs: "column", sm: "row" },
+  gap: 2,
+  alignItems: "center",
+  justifyContent: "center",
+  width: "100%",
 };
 
 const vintageButtonSx = {
@@ -217,13 +247,17 @@ const vintageButtonSx = {
 const Home = () => {
   const [availableModels, setAvailableModels] = useState<string[]>([]);
   const [selectedModel, setSelectedModel] = useState<string>("");
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
-    dayjs(Date.now())
+  const [selectedDate, setSelectedDate] = useState<Dayjs>(
+    dayjs().month(0).date(1) // January 1st, current year
   );
 
   const [eventsList, setEventsList] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Get current month and day from the Dayjs object
+  const selectedMonth = selectedDate.format("MM");
+  const selectedDay = selectedDate.format("DD");
 
   useEffect(() => {
     const getAllModels = async () => {
@@ -248,6 +282,38 @@ const Home = () => {
     setSelectedModel(event.target.value as string);
   };
 
+  const handleMonthChange = (event: SelectChangeEvent) => {
+    const month = parseInt(event.target.value) - 1; // Dayjs months are 0-indexed
+    let newDate = selectedDate.month(month);
+
+    // Validate day for the selected month
+    const daysInMonth = newDate.daysInMonth();
+    if (selectedDate.date() > daysInMonth) {
+      newDate = newDate.date(daysInMonth);
+    }
+
+    setSelectedDate(newDate);
+  };
+
+  const handleDayChange = (event: SelectChangeEvent) => {
+    const day = parseInt(event.target.value);
+    const newDate = selectedDate.date(day);
+    setSelectedDate(newDate);
+  };
+
+  const getValidDays = (): typeof DAYS => {
+    const maxDays = selectedDate.daysInMonth();
+    return DAYS.slice(0, maxDays);
+  };
+
+  const getFormattedDate = (): string => {
+    return selectedDate.format("MM-DD");
+  };
+
+  const getDisplayDate = (): string => {
+    return selectedDate.format("MMMM D");
+  };
+
   const handleSubmit = async () => {
     if (!selectedModel) {
       setError("Please select an AI model first.");
@@ -260,7 +326,7 @@ const Home = () => {
     llmService
       .queryForModel({
         provider: selectedModel,
-        date: selectedDate?.format("MM-DD") || "",
+        date: getFormattedDate(),
       })
       .then((res) => {
         console.log("Generated Events:", res);
@@ -285,13 +351,7 @@ const Home = () => {
               Chronicle Explorer
             </Typography>
             <Typography variant="h6" sx={subtitleSx}>
-              Uncover the Tapestry of Time
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ ...subtitleSx, fontSize: "0.9rem", mb: 3 }}
-            >
-              Journey through the annals of history
+              Discover the Journey Through Time
             </Typography>
             <Box sx={decorativeBorderSx} />
           </Box>
@@ -340,26 +400,72 @@ const Home = () => {
               <Typography variant="h5" sx={promptTextSx}>
                 What transpired on...
               </Typography>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DatePicker"]}>
-                  <DatePicker
-                    value={selectedDate}
-                    onChange={(newValue) => setSelectedDate(newValue)}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        backgroundColor: "rgba(248, 244, 230, 0.8)",
-                        fontFamily: VINTAGE_FONTS.serif,
-                        "&:hover .MuiOutlinedInput-notchedOutline": {
-                          borderColor: VINTAGE_COLORS.lightBrown,
-                        },
-                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                          borderColor: VINTAGE_COLORS.gold,
-                        },
-                      },
-                    }}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
+
+              {/* Month and Day Selectors */}
+              <Box sx={dateSelectorsContainerSx}>
+                <FormControl sx={{ ...formControlSx, minWidth: 140 }}>
+                  <InputLabel id="month-select-label" size="small">
+                    Month
+                  </InputLabel>
+                  <Select
+                    labelId="month-select-label"
+                    id="month-select"
+                    label="Month"
+                    size="small"
+                    value={selectedMonth}
+                    onChange={handleMonthChange}
+                  >
+                    {MONTHS.map((month) => (
+                      <MenuItem
+                        key={month.value}
+                        value={month.value}
+                        sx={{ fontFamily: VINTAGE_FONTS.serif }}
+                      >
+                        {month.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl sx={{ ...formControlSx, minWidth: 100 }}>
+                  <InputLabel id="day-select-label" size="small">
+                    Day
+                  </InputLabel>
+                  <Select
+                    labelId="day-select-label"
+                    id="day-select"
+                    label="Day"
+                    size="small"
+                    value={selectedDay}
+                    onChange={handleDayChange}
+                  >
+                    {getValidDays().map((day) => (
+                      <MenuItem
+                        key={day.value}
+                        value={day.value}
+                        sx={{ fontFamily: VINTAGE_FONTS.serif }}
+                      >
+                        {day.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+
+              {/* Selected Date Display */}
+              <Typography
+                variant="body1"
+                sx={{
+                  fontFamily: VINTAGE_FONTS.serif,
+                  color: VINTAGE_COLORS.mediumBrown,
+                  fontSize: "1.1rem",
+                  fontStyle: "italic",
+                  textAlign: "center",
+                }}
+              >
+                Selected: {getDisplayDate()}
+              </Typography>
+
               <Button
                 variant="contained"
                 sx={vintageButtonSx}
@@ -382,7 +488,6 @@ const Home = () => {
             </Box>
           </Box>
 
-          {/* Results Section */}
           <Box sx={{ position: "relative", zIndex: 1 }}>
             <HistoricEventsCard
               eventsList={eventsList}
