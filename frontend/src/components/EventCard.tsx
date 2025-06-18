@@ -347,7 +347,6 @@ const HistoricEventsCard = memo(
               <EventItem
                 key={`event-${index}`}
                 event={event}
-                index={index}
                 isLast={index === validEvents.length - 1}
               />
             ))}
