@@ -87,13 +87,9 @@ Dockerfile
 docker-compose*.yml
 
 # Documentation
-README.md
 docs/
 
 # Other
 .mypy_cache/
 .dmypy.json
 dmypy.json
-
-# Requirements (not needed with Poetry)
-requirements.txt

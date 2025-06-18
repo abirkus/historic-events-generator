@@ -1,7 +1,7 @@
 [project]
 name = "historic-events-generator"
 version = "0.1.0"
-description = ""
+description = "API service layer that connects to various LLMs to generate historical events."
 authors = [
     {name = "Andre Birkus",email = "birkusandre@gmail.com"}
 ]
@@ -13,10 +13,11 @@ dependencies = [
     "python-dotenv (>=1.0.1,<2.0.0)",
     "google-generativeai (>=0.8.4,<0.9.0)",
     "pydantic-settings (>=2.8.1,<3.0.0)",
-    "llamaapi (>=0.1.36,<0.2.0)"
+    "llamaapi (>=0.1.36,<0.2.0)",
 ]
 
 [tool.poetry]
+package-mode = true
 packages = [{include = "scripts"}]
 
 [build-system]
@@ -26,5 +27,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 dev = "scripts.run:dev"
+prod = "scripts.run:prod"
 start = "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 start-prod = "uvicorn app.main:app --host 0.0.0.0 --port 8000"
