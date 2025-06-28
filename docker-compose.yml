@@ -7,13 +7,15 @@ services:
     ports:
       - "8000:8000"
     environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
       - ENVIRONMENT=production
       - PYTHONPATH=/app
     networks:
       - app-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -23,15 +25,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        # Use service name for internal communication
-        VITE_SERVER_API_BASE_URL: http://localhost:8000/api
     container_name: chronicles-frontend
     ports:
       - "3000:3000"
-    environment:
-      # For runtime env vars (if needed)
-      - VITE_SERVER_API_BASE_URL=http://localhost:8000
     depends_on:
       backend:
         condition: service_healthy
