@@ -4,12 +4,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from .routers import chat
 from .config import get_settings
 
-app = FastAPI(title="AI Chat API")
+app = FastAPI(
+    title="AI Chat API", description="AI-powered historic events API", version="1.0.0"
+)
 
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Adjust for your frontend
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
