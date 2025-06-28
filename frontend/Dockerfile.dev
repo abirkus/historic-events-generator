@@ -1,0 +1,24 @@
+# Frontend Dockerfile - Multi-stage build for React/Vite app
+FROM node:20 AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install ALL dependencies (including dev dependencies needed for build)
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Build the application
+ARG VITE_SERVER_API_BASE_URL=http://localhost:8000
+ENV VITE_SERVER_API_BASE_URL=$VITE_SERVER_API_BASE_URL
+
+# Expose port
+EXPOSE 3000 5173
+
+# Start nginx
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
