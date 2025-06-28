@@ -243,6 +243,22 @@ docker-compose logs -f
 docker-compose down
 ```
 
+### Local Production Testing with .env.production
+
+```bash
+# 1. Build production (with production env file)
+docker-compose --env-file .env.production build
+
+# 2. Start production
+docker-compose --env-file .env.production up -d
+# Or with logs to see what's happening
+docker-compose --env-file .env.production up
+
+# 3. Test
+curl http://localhost:3000  # Should show nginx (not vite dev server)
+curl http://localhost:8000/api/health
+```
+
 ### Production Build Commands
 
 ```bash

@@ -26,18 +26,12 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev 
-      args:
-        # Use service name for internal communication
-        VITE_SERVER_API_BASE_URL: http://localhost:8000/api
     volumes:
     - ./frontend:/app          # Mount source for hot reload
     - /app/node_modules 
     container_name: chronicles-frontend
     ports:
       - "3000:3000"
-    environment:
-      # For runtime env vars (if needed)
-      - VITE_SERVER_API_BASE_URL=http://localhost:8000/api
     depends_on:
       backend:
         condition: service_healthy
