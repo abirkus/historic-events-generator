@@ -40,17 +40,17 @@ cp .env.sample .env
 # Start development server
 poetry run fastapi dev app/main.py
 
-# Access at http://localhost:8000
-# API docs at http://localhost:8000/docs
+# Access at http://localhost:8080
+# API docs at http://localhost:8080/docs
 ```
 
 ### Docker Development
 ```bash
 # Build optimized container (300MB)
 docker build -t backend-dev .
-docker run -d --name backend-dev -p 8000:8000 -v $(pwd):/app backend-dev
+docker run -d --name backend-dev -p 8080:8080 -v $(pwd):/app backend-dev
 
-# Access at http://localhost:8000
+# Access at http://localhost:8080
 ```
 
 ## 📋 Prerequisites
@@ -104,7 +104,7 @@ poetry export -f requirements.txt --output requirements-dev.txt --without-hashes
 ### Legacy Commands (still supported)
 ```bash
 # Alternative ways to start the server locally
-poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8080
 python -m uvicorn app.main:app --reload
 ```
 
@@ -121,7 +121,7 @@ docker build -t backend-dev .
 # Run with hot reloading (mount source code)
 docker run -d \
   --name backend-dev-container \
-  -p 8000:8000 \
+  -p 8080:8080 \
   -v $(pwd):/app \
   -e OPENAI_API_KEY=your_key_here \
   -e GEMINI_API_KEY=your_key_here \
@@ -144,13 +144,13 @@ docker build -t backend-prod .
 # Run production container
 docker run -d \
   --name backend-prod-container \
-  -p 8000:8000 \
+  -p 8080:8080 \
   -e OPENAI_API_KEY=your_key_here \
   -e GEMINI_API_KEY=your_key_here \
   -e ENVIRONMENT=production \
   backend-prod
 
-# Access at http://localhost:8000
+# Access at http://localhost:8080
 ```
 
 ### Using Environment File with Docker
@@ -159,7 +159,7 @@ docker run -d \
 # Run with .env file
 docker run -d \
   --name backend-container \
-  -p 8000:8000 \
+  -p 8080:8080 \
   --env-file .env \
   backend-dev
 ```
@@ -174,7 +174,7 @@ docker run -d \
 | `DEBUG` | Enable debug mode | ❌ No | `true` |
 | `PYTHONPATH` | Python path | ❌ No | `/app` |
 | `HOST` | Server host | ❌ No | `0.0.0.0` |
-| `PORT` | Server port | ❌ No | `8000` |
+| `PORT` | Server port | ❌ No | `8080` |
 
 ### Environment Files
 
@@ -236,7 +236,7 @@ docker build -t backend-dev .
 # Start container with volume mounting for hot reload
 docker run -d \
   --name backend-dev \
-  -p 8000:8000 \
+  -p 8080:8080 \
   -v $(pwd):/app \
   --env-file .env \
   backend-dev
@@ -303,10 +303,10 @@ When the server is running, comprehensive API documentation is available:
 
 | Endpoint | Description |
 |----------|-------------|
-| `http://localhost:8000/docs` | **Swagger UI** - Interactive API documentation |
-| `http://localhost:8000/redoc` | **ReDoc** - Alternative documentation format |
-| `http://localhost:8000/openapi.json` | **OpenAPI Schema** - Raw API specification |
-| `http://localhost:8000/api/health` | **Health Check** - Service status |
+| `http://localhost:8080/docs` | **Swagger UI** - Interactive API documentation |
+| `http://localhost:8080/redoc` | **ReDoc** - Alternative documentation format |
+| `http://localhost:8080/openapi.json` | **OpenAPI Schema** - Raw API specification |
+| `http://localhost:8080/api/health` | **Health Check** - Service status |
 
 ### Key API Endpoints
 
@@ -322,7 +322,7 @@ POST /api/events
 }
 
 # View all available endpoints
-curl http://localhost:8000/docs
+curl http://localhost:8080/docs
 ```
 
 ## 🧪 Testing
@@ -376,7 +376,7 @@ cat .env
 **2. Server not starting:**
 ```bash
 # Check for port conflicts
-lsof -i :8000
+lsof -i :8080
 
 # Check logs for errors (locally)
 poetry run fastapi dev app/main.py
@@ -408,10 +408,10 @@ poetry run python script.py
 
 ```bash
 # Check server status
-curl http://localhost:8000/api/health
+curl http://localhost:8080/api/health
 
 # Test API endpoint
-curl -X POST http://localhost:8000/api/events \
+curl -X POST http://localhost:8080/api/events \
   -H "Content-Type: application/json" \
   -d '{"date": "2023-06-28", "model": "openai"}'
 
@@ -443,7 +443,7 @@ docker rmi backend
 
 # Rebuild and restart
 docker build -t backend .
-docker run -d --name backend-dev -p 8000:8000 --env-file .env backend
+docker run -d --name backend-dev -p 8080:8080 --env-file .env backend
 ```
 
 ## 🚀 Deployment
@@ -456,7 +456,7 @@ poetry run fastapi run app/main.py
 
 # Docker production build (requirements.txt)
 docker build -t backend-prod .
-docker run -p 8000:8000 --env-file .env.production backend-prod
+docker run -p 8080:8080 --env-file .env.production backend-prod
 ```
 
 ### Production Checklist
