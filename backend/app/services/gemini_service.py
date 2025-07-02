@@ -2,7 +2,7 @@ import re
 import json
 import logging
 from typing import List, Dict, Optional
-import google.generativeai as genai
+from google import genai
 from .ai_service import AIService
 
 logger = logging.getLogger(__name__)
