@@ -39,7 +39,7 @@ Create a `.env` file in the frontend directory:
 cp .env.sample .env
 
 # Edit with your values
-VITE_SERVER_API_BASE_URL=http://localhost:8000
+VITE_SERVER_API_BASE_URL=http://localhost:8080
 ```
 
 ## 🛠️ Available Commands
@@ -68,7 +68,7 @@ docker run -d \
   -p 3000:3000 \
   -v $(pwd):/app \
   -v /app/node_modules \
-  -e VITE_SERVER_API_BASE_URL=http://localhost:8000 \
+  -e VITE_SERVER_API_BASE_URL=http://localhost:8080 \
   frontend-dev
 
 # View logs
@@ -88,7 +88,7 @@ docker build -t frontend-prod .
 docker run -d \
   --name frontend-prod-container \
   -p 3000:3000 \
-  -e VITE_SERVER_API_BASE_URL=http://localhost:8000 \
+  -e VITE_SERVER_API_BASE_URL=http://localhost:8080 \
   frontend-prod
 
 # Access at http://localhost:3000
@@ -98,24 +98,24 @@ docker run -d \
 
 ```bash
 # Development
-cd frontend && docker build -f Dockerfile.dev -t frontend-dev . && docker run -d --name frontend-dev -p 3000:3000 -v $(pwd):/app -v /app/node_modules -e VITE_SERVER_API_BASE_URL=http://localhost:8000 frontend-dev
+cd frontend && docker build -f Dockerfile.dev -t frontend-dev . && docker run -d --name frontend-dev -p 3000:3000 -v $(pwd):/app -v /app/node_modules -e VITE_SERVER_API_BASE_URL=http://localhost:8080 frontend-dev
 
 # Production  
-cd frontend && docker build -t frontend-prod . && docker run -d --name frontend-prod -p 3000:3000 -e VITE_SERVER_API_BASE_URL=http://localhost:8000 frontend-prod
+cd frontend && docker build -t frontend-prod . && docker run -d --name frontend-prod -p 3000:3000 -e VITE_SERVER_API_BASE_URL=http://localhost:8080 frontend-prod
 ```
 
 ## 🌐 Environment Variables
 
 | Variable | Description | Development | Production |
 |----------|-------------|-------------|------------|
-| `VITE_SERVER_API_BASE_URL` | Backend API endpoint | `http://localhost:8000` | Your production API URL |
+| `VITE_SERVER_API_BASE_URL` | Backend API endpoint | `http://localhost:8080` | Your production API URL |
 | `NODE_ENV` | Environment mode | `development` | `production` |
 
 ### Environment Files
 
 ```bash
 # .env.development
-VITE_SERVER_API_BASE_URL=http://localhost:8000
+VITE_SERVER_API_BASE_URL=http://localhost:8080
 NODE_ENV=development
 
 # .env.production  
@@ -195,7 +195,7 @@ server: {
 echo $VITE_SERVER_API_BASE_URL
 
 # Verify backend is running
-curl http://localhost:8000/docs
+curl http://localhost:8080/docs
 ```
 
 **3. Hot reloading not working in Docker:**
@@ -227,7 +227,7 @@ docker logs frontend-dev-container
 docker exec -it frontend-dev-container sh
 
 # Test API connectivity from container
-docker exec -it frontend-dev-container curl http://host.docker.internal:8000/docs
+docker exec -it frontend-dev-container curl http://host.docker.internal:8080/docs
 ```
 
 ### Reset Development Environment

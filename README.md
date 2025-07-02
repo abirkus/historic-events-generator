@@ -14,8 +14,8 @@ docker-compose -f docker-compose.dev.yml up -d
 
 # Access the application
 # Frontend: http://localhost:3000
-# Backend API: http://localhost:8000
-# API Docs: http://localhost:8000/docs
+# Backend API: http://localhost:8080
+# API Docs: http://localhost:8080/docs
 ```
 
 ## 🏗️ Project Structure
@@ -114,7 +114,7 @@ docker-compose -f docker-compose.dev.yml logs --tail=50 backend
 cat > .env.development << EOF
 COMPOSE_PROJECT_NAME=chronicles-dev
 ENVIRONMENT=development
-VITE_SERVER_API_BASE_URL=http://localhost:8000
+VITE_SERVER_API_BASE_URL=http://localhost:8080
 DEBUG=true
 PYTHONPATH=/app
 NODE_ENV=development
@@ -124,7 +124,7 @@ EOF
 cat > .env.production << EOF
 COMPOSE_PROJECT_NAME=chronicles
 ENVIRONMENT=production
-VITE_SERVER_API_BASE_URL=http://localhost:8000
+VITE_SERVER_API_BASE_URL=http://localhost:8080
 PYTHONPATH=/app
 NODE_ENV=production
 EOF
@@ -143,7 +143,7 @@ docker-compose -f docker-compose.dev.yml up --build -d
 docker-compose -f docker-compose.dev.yml ps
 
 # Test endpoints
-curl http://localhost:8000/docs    # Backend API documentation
+curl http://localhost:8080/docs    # Backend API documentation
 curl http://localhost:3000         # Frontend application
 ```
 
@@ -256,7 +256,7 @@ docker-compose --env-file .env.production up
 
 # 3. Test
 curl http://localhost:3000  # Should show nginx (not vite dev server)
-curl http://localhost:8000/api/health
+curl http://localhost:8080/api/health
 ```
 
 ### Production Build Commands
@@ -306,7 +306,7 @@ docker-compose -f docker-compose.dev.yml up --build -d
 ```bash
 # Find what's using the port
 lsof -i :3000
-lsof -i :8000
+lsof -i :8080
 
 # Kill process or change ports in docker-compose files
 ```
@@ -429,7 +429,7 @@ docker network prune
 
 | Variable | Description | Development | Production |
 |----------|-------------|-------------|------------|
-| `VITE_SERVER_API_BASE_URL` | Frontend API endpoint | `http://localhost:8000` | Your production API URL |
+| `VITE_SERVER_API_BASE_URL` | Frontend API endpoint | `http://localhost:8080` | Your production API URL |
 | `ENVIRONMENT` | App environment | `development` | `production` |
 | `DEBUG` | Enable debug mode | `true` | `false` |
 | `NODE_ENV` | Node environment | `development` | `production` |
@@ -440,14 +440,14 @@ docker network prune
 |---------|-----------------|-----------------|---------|
 | Frontend | 3000 | 3000 | Web application |
 | Frontend HMR | 5173 | N/A | Hot module replacement |
-| Backend | 8000 | 8000 | API server |
+| Backend | 8080 | 8080 | API server |
 
 ## 📖 API Documentation
 
 When the backend is running, API documentation is available at:
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-- **OpenAPI JSON**: http://localhost:8000/openapi.json
+- **Swagger UI**: http://localhost:8080/docs
+- **ReDoc**: http://localhost:8080/redoc
+- **OpenAPI JSON**: http://localhost:8080/openapi.json
 
 ## 🤝 Contributing
 
