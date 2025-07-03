@@ -8,9 +8,6 @@ import logging
 import os
 
 
-import uvicorn
-
-
 # Add startup logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -58,7 +55,7 @@ async def startup_event():
     logger.info(f"OpenAI configured: {bool(os.getenv('OPENAI_API_KEY'))}")
     logger.info(f"Gemini configured: {bool(os.getenv('GEMINI_API_KEY'))}")
     logger.info(f"Python path: {os.getenv('PYTHONPATH', 'not set')}")
-    logger.info("Starting server on 0.0.0.0:80")
+    logger.info("Starting server on 0.0.0.0:8080")
     logger.info("✅ FastAPI startup complete - ready for requests")
 
 
