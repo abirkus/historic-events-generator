@@ -23,6 +23,34 @@ app = FastAPI(
 )
 
 
+def get_cors_origins():
+    environment = os.getenv("ENVIRONMENT", "development")
+
+    if environment == "production":
+        # Your production frontend URL from App Runner
+        frontend_url = os.getenv("FRONTEND_URL", "")
+        origins = []
+
+        if frontend_url:
+            origins.append(frontend_url)
+            logger.info(f"Added production frontend URL: {frontend_url}")
+
+        # Fallback: allow App Runner domain pattern
+        origins.extend(
+            ["https://*.us-east-1.awsapprunner.com", "https://*.awsapprunner.com"]
+        )
+
+        return origins
+    else:
+        # Development origins
+        return [
+            "http://localhost:3000",
+            "http://localhost:5173",  # Vite dev server
+            "http://127.0.0.1:3000",
+            "http://localhost:8080",  # Alternative dev port
+        ]
+
+
 @app.on_event("startup")
 async def startup_event():
     logger.info("🚀 Historic Events Backend Starting...")
@@ -37,7 +65,7 @@ async def startup_event():
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=get_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

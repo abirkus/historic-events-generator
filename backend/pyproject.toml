@@ -26,7 +26,7 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry.scripts]
-dev = "scripts.run:dev"
-prod = "scripts.run:prod"
+dev = "scripts.run:dev --port 8080"
+prod = "scripts.run:prod --port 8080"
 start = "uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload"
 start-prod = "uvicorn app.main:app --host 0.0.0.0 --port 8080"
