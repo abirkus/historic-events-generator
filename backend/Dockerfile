@@ -32,17 +32,13 @@ RUN poetry install --only=main --no-root && rm -rf $POETRY_CACHE_DIR
 COPY . .
 
 # Create non-root user for security
-RUN adduser --disabled-password --gecos '' --shell /bin/bash appuser \
-    && chown -R appuser:appuser /app
+# RUN adduser --disabled-password --gecos '' --shell /bin/bash appuser \
+#     && chown -R appuser:appuser /app
 
 # Switch to non-root user
-USER appuser
+# USER appuser
 
 # Expose port
 EXPOSE 8000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/api/health || exit 1
 
 CMD ["poetry", "run", "fastapi", "run", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]
