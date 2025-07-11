@@ -1,11 +1,5 @@
+# Python
 __pycache__
 *.pyc
-.git
-.pytest_cache
 .mypy_cache
 .venv
-tests/
-docs/
-README.md
-poetry.lock
-scripts/
