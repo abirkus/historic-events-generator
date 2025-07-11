@@ -7,3 +7,6 @@ __pycache__
 tests/
 docs/
 README.md
+pyproject.toml
+poetry.lock
+scripts/
