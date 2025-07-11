@@ -25,8 +25,6 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 
-[tool.poetry.scripts]
+[project.scripts]
 dev = "scripts.run:dev"
 prod = "scripts.run:prod"
-start = "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
-start-prod = "uvicorn app.main:app --host 0.0.0.0 --port 8000"
