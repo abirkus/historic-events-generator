@@ -1,7 +1,7 @@
 # Historic Events Generator Frontend
 ### by Andre Birkus
 
-A **single-page application** built with Vite and React for interacting with AI models to obtain historic events based on user date input.
+A **single-page application** built with Vite and React for interacting with AI models to obtain historic events based on user date entry.
 
 ## 🚀 Quick Start
 
