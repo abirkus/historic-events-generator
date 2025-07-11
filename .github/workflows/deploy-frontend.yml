@@ -43,6 +43,8 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: ./frontend 
+        env:
+          VITE_SERVER_API_BASE_URL: ${{ secrets.VITE_SERVER_API_BASE_URL }}
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
