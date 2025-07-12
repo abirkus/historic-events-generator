@@ -442,6 +442,14 @@ docker network prune
 | Frontend HMR | 5173 | N/A | Hot module replacement |
 | Backend | 8000 | 8000 | API server |
 
+
+## 🔧 Common Compatibility Pitfalls and Fixes
+### Architecture Mismatch: ARM64 (Apple) vs AMD64 (AWS)
+- Apple M-series chips use the ARM64 architecture.
+- AWS App Runner (and most ECS/Fargate environments) run AMD64 (x86_64) containers by default.
+- If you build a Docker image natively on your M4 Mac, it may be ARM64, and that won’t run in an AMD64 environment on AWS.
+- Fix: Always build for the AMD64 architecture explicitly:
+  - `docker buildx build --platform linux/amd64 -t my-app .`
 ## 📖 API Documentation
 
 When the backend is running, API documentation is available at:
