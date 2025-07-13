@@ -11,29 +11,24 @@ app = FastAPI(
 
 
 def get_cors_origins():
-    environment = os.getenv("ENVIRONMENT", "development")
+    environment = os.getenv("ENVIRONMENT", "production")
 
     if environment == "production":
-        # Your production frontend URL from App Runner
-        frontend_url = os.getenv("FRONTEND_URL", "")
-        origins = []
-
-        if frontend_url:
-            origins.append(frontend_url)
-
-        # Fallback: allow App Runner domain pattern
-        origins.extend(
-            ["https://*.us-east-1.awsapprunner.com", "https://*.awsapprunner.com"]
-        )
+        # Get allowed origins from environment variable
+        origins_env = os.getenv("ALLOWED_ORIGINS", "")
+        if origins_env:
+            origins = [origin.strip() for origin in origins_env.split(",")]
+        else:
+            # Fallback defaults
+            origins = ["https://www.historicevents.ai", "https://historicevents.ai"]
 
         return origins
     else:
-        # Development origins
         return [
             "http://localhost:3000",
-            "http://localhost:5173",  # Vite dev server
+            "http://localhost:5173",
             "http://127.0.0.1:3000",
-            "http://localhost:8080",  # Alternative dev port
+            "http://localhost:8080",
         ]
 
 
