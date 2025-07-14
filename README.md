@@ -36,7 +36,6 @@ npm run dev
 ```bash
 # Test full stack with Docker
 docker-compose up --build
-
 # Access the application
 # Frontend: http://localhost:3000
 # Backend API: http://localhost:8000

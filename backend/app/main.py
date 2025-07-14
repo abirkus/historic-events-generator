@@ -1,9 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 
 from .routers import chat
 from .config import get_settings
 import os
+
+load_dotenv(override=True)
 
 app = FastAPI(
     title="AI Chat API", description="AI-powered historic events API", version="1.0.0"
@@ -11,7 +14,7 @@ app = FastAPI(
 
 
 def get_cors_origins():
-    environment = os.getenv("ENVIRONMENT", "production")
+    environment = os.getenv("ENVIRONMENT", "development")
 
     if environment == "production":
         # Get allowed origins from environment variable

@@ -41,10 +41,9 @@ const NEWSPAPER_FONTS = {
 
 // Base card styling
 const newspaperCardSx = {
-  maxWidth: "80%",
   margin: "0 auto",
   mt: 4,
-  p: 3,
+  p: { xs: 0, md: 3 },
   backgroundColor: NEWSPAPER_COLORS.paper,
   backgroundImage: `
     linear-gradient(90deg, transparent 1px, rgba(0,0,0,0.03) 1px, rgba(0,0,0,0.03) 2px, transparent 2px),

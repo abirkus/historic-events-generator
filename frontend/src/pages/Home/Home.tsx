@@ -75,7 +75,7 @@ const vintageContainerSx = {
 const mainPaperSx = {
   maxWidth: 1000,
   mx: "auto",
-  p: 4,
+  p: { xs: 1, md: 4 },
   backgroundColor: VINTAGE_COLORS.paper,
   backgroundImage: `
     linear-gradient(90deg, transparent 1px, rgba(0,0,0,0.02) 1px, rgba(0,0,0,0.02) 2px, transparent 2px),
