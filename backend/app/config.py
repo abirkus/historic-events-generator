@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
 
 # When creating a Settings instance,
@@ -7,12 +7,14 @@ from functools import lru_cache
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="allow",  # Allow extra fields that aren't defined in the model
+    )
+
     default_ai_provider: str = "openai"
     openai_api_key: str = ""
     gemini_api_key: str = ""
-
-    class Config:
-        env_file = ".env"
 
 
 # The @lru_cache() decorator is a nice optimization

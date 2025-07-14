@@ -1,6 +1,15 @@
 import { Link } from "react-router-dom";
-import { Box, Typography, Container } from "@mui/material";
-import { Schedule, Info } from "@mui/icons-material";
+import {
+  Box,
+  Typography,
+  Container,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+} from "@mui/material";
+import { Schedule, Info, Menu, Close } from "@mui/icons-material";
+import { useState } from "react";
 import aiLogo from "../assets/chronicle-explorer.png";
 
 // Vintage styling constants
@@ -20,6 +29,8 @@ const VINTAGE_FONTS = {
 
 // Header component
 const Header = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const headerSx = {
     width: "100%",
     backgroundColor: VINTAGE_COLORS.darkBrown,
@@ -49,8 +60,8 @@ const Header = () => {
   };
 
   const logoSx = {
-    width: 45,
-    height: 45,
+    width: { xs: 35, sm: 45 },
+    height: { xs: 35, sm: 45 },
     borderRadius: "50%",
     border: `3px solid ${VINTAGE_COLORS.gold}`,
     filter: "sepia(20%) contrast(110%)",
@@ -65,33 +76,80 @@ const Header = () => {
     fontFamily: VINTAGE_FONTS.decorative,
     fontWeight: "bold",
     color: VINTAGE_COLORS.gold,
-    fontSize: "1.5rem",
+    fontSize: { xs: "1.1rem", sm: "1.3rem", md: "1.5rem" },
     letterSpacing: "0.1em",
     textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
-    ml: 2,
+    ml: { xs: 1, sm: 2 },
+    display: { xs: "none", sm: "block" },
+  };
+
+  const brandTextMobileSx = {
+    fontFamily: VINTAGE_FONTS.decorative,
+    fontWeight: "bold",
+    color: VINTAGE_COLORS.gold,
+    fontSize: "0.9rem",
+    letterSpacing: "0.05em",
+    textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
+    ml: 1,
+    display: { xs: "block", sm: "none" },
   };
 
   const navLinkSx = {
     fontFamily: VINTAGE_FONTS.serif,
     color: VINTAGE_COLORS.paper,
     textDecoration: "none",
-    fontSize: "1rem",
+    fontSize: { xs: "0.9rem", sm: "1rem" },
     fontWeight: "500",
     letterSpacing: "0.05em",
-    px: 2,
+    px: { xs: 1, sm: 2 },
     py: 1,
     borderRadius: 0,
     border: `1px solid transparent`,
     transition: "all 0.3s ease",
     display: "flex",
     alignItems: "center",
-    gap: 1,
+    gap: { xs: 0.5, sm: 1 },
     "&:hover": {
       color: VINTAGE_COLORS.gold,
       borderColor: VINTAGE_COLORS.gold,
       backgroundColor: "rgba(218,165,32,0.1)",
       transform: "translateY(-1px)",
     },
+  };
+
+  const mobileNavLinkSx = {
+    fontFamily: VINTAGE_FONTS.serif,
+    color: VINTAGE_COLORS.paper,
+    textDecoration: "none",
+    fontSize: "1.1rem",
+    fontWeight: "500",
+    letterSpacing: "0.05em",
+    py: 2,
+    px: 3,
+    display: "flex",
+    alignItems: "center",
+    gap: 2,
+    width: "100%",
+    "&:hover": {
+      color: VINTAGE_COLORS.gold,
+      backgroundColor: "rgba(218,165,32,0.1)",
+    },
+  };
+
+  const mobileMenuButtonSx = {
+    color: VINTAGE_COLORS.gold,
+    display: { xs: "flex", md: "none" },
+    "&:hover": {
+      backgroundColor: "rgba(218,165,32,0.1)",
+    },
+  };
+
+  const handleMobileMenuToggle = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleMobileMenuClose = () => {
+    setMobileMenuOpen(false);
   };
 
   return (
@@ -102,13 +160,13 @@ const Header = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            py: 1.5,
+            py: { xs: 1, sm: 1.5 },
             position: "relative",
             zIndex: 1,
           }}
         >
           {/* Logo and Brand */}
-          <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Box sx={{ display: "flex", alignItems: "center", flex: 1 }}>
             <Box
               component="img"
               src={aiLogo}
@@ -118,12 +176,19 @@ const Header = () => {
             <Typography variant="h6" sx={brandTextSx}>
               Chronicle Explorer
             </Typography>
+            <Typography variant="h6" sx={brandTextMobileSx}>
+              Chronicle
+            </Typography>
           </Box>
 
-          {/* Navigation */}
+          {/* Desktop Navigation */}
           <Box
             component="nav"
-            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            sx={{
+              display: { xs: "none", md: "flex" },
+              alignItems: "center",
+              gap: 1,
+            }}
           >
             <Box component={Link} to="/" sx={navLinkSx}>
               <Schedule fontSize="small" />
@@ -134,8 +199,70 @@ const Header = () => {
               About the Archives
             </Box>
           </Box>
+
+          {/* Mobile Menu Button */}
+          <IconButton
+            sx={mobileMenuButtonSx}
+            onClick={handleMobileMenuToggle}
+            aria-label="Open navigation menu"
+          >
+            <Menu />
+          </IconButton>
         </Box>
       </Container>
+
+      {/* Mobile Navigation Drawer */}
+      <Drawer
+        anchor="right"
+        open={mobileMenuOpen}
+        onClose={handleMobileMenuClose}
+        sx={{
+          display: { xs: "block", md: "none" },
+          "& .MuiDrawer-paper": {
+            backgroundColor: VINTAGE_COLORS.darkBrown,
+            backgroundImage: `
+              linear-gradient(90deg, transparent 1px, rgba(218,165,32,0.1) 1px, rgba(218,165,32,0.1) 2px, transparent 2px),
+              linear-gradient(180deg, ${VINTAGE_COLORS.darkBrown} 0%, #3D2518 100%)
+            `,
+            backgroundSize: "20px 20px",
+            width: 250,
+            borderLeft: `2px solid ${VINTAGE_COLORS.gold}`,
+          },
+        }}
+      >
+        <Box sx={{ display: "flex", justifyContent: "flex-end", p: 1 }}>
+          <IconButton
+            onClick={handleMobileMenuClose}
+            sx={{ color: VINTAGE_COLORS.gold }}
+          >
+            <Close />
+          </IconButton>
+        </Box>
+        <List sx={{ pt: 0 }}>
+          <ListItem disablePadding>
+            <Box
+              component={Link}
+              to="/"
+              sx={mobileNavLinkSx}
+              onClick={handleMobileMenuClose}
+            >
+              <Schedule />
+              Chronicles
+            </Box>
+          </ListItem>
+          <ListItem disablePadding>
+            <Box
+              component={Link}
+              to="/about"
+              sx={mobileNavLinkSx}
+              onClick={handleMobileMenuClose}
+            >
+              <Info />
+              About the Archives
+            </Box>
+          </ListItem>
+        </List>
+      </Drawer>
     </Box>
   );
 };

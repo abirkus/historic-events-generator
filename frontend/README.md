@@ -5,7 +5,7 @@ A **single-page application** built with Vite and React for interacting with AI 
 
 ## 🚀 Quick Start
 
-### Local Development (Recommended)
+### Local Development
 ```bash
 # Install dependencies
 npm install
@@ -16,19 +16,9 @@ npm run dev
 # Access at http://localhost:3000
 ```
 
-### Docker Development
-```bash
-# Build and run development container
-docker build -f Dockerfile.dev -t frontend-dev .
-docker run -d --name frontend-dev -p 3000:3000 -v $(pwd):/app -v /app/node_modules frontend-dev
-
-# Access at http://localhost:3000
-```
-
 ## 📋 Prerequisites
 
-- **Node.js** 18+ and **npm** (for local development)
-- **Docker** (for containerized development)
+- **Node.js** 18+ and **npm**
 
 ### Environment Setup
 
@@ -53,56 +43,6 @@ VITE_SERVER_API_BASE_URL=http://localhost:8000
 | `npm run test` | Run unit tests |
 | `npm run lint` | Lint code with ESLint |
 | `npm run format` | Format code with Prettier |
-
-## 🐳 Docker Usage
-
-### Development Container
-
-```bash
-# Build development image
-docker build -f Dockerfile.dev -t frontend-dev .
-
-# Run with hot reloading
-docker run -d \
-  --name frontend-dev-container \
-  -p 3000:3000 \
-  -v $(pwd):/app \
-  -v /app/node_modules \
-  -e VITE_SERVER_API_BASE_URL=http://localhost:8000 \
-  frontend-dev
-
-# View logs
-docker logs -f frontend-dev-container
-
-# Stop and cleanup
-docker stop frontend-dev-container && docker rm frontend-dev-container
-```
-
-### Production Container
-
-```bash
-# Build production image
-docker build -t frontend-prod .
-
-# Run production container
-docker run -d \
-  --name frontend-prod-container \
-  -p 3000:3000 \
-  -e VITE_SERVER_API_BASE_URL=http://localhost:8000 \
-  frontend-prod
-
-# Access at http://localhost:3000
-```
-
-### One-liner Commands
-
-```bash
-# Development
-cd frontend && docker build -f Dockerfile.dev -t frontend-dev . && docker run -d --name frontend-dev -p 3000:3000 -v $(pwd):/app -v /app/node_modules -e VITE_SERVER_API_BASE_URL=http://localhost:8000 frontend-dev
-
-# Production  
-cd frontend && docker build -t frontend-prod . && docker run -d --name frontend-prod -p 3000:3000 -e VITE_SERVER_API_BASE_URL=http://localhost:8000 frontend-prod
-```
 
 ## 🌐 Environment Variables
 
@@ -137,20 +77,6 @@ npm run dev
 # Hot reloading will update automatically
 ```
 
-### Docker Development
-```bash
-# Start container with volume mounting for hot reload
-docker run -d \
-  --name frontend-dev \
-  -p 3000:3000 \
-  -v $(pwd):/app \
-  -v /app/node_modules \
-  frontend-dev
-
-# Make changes to src/ files
-# Changes will be reflected in the container
-```
-
 ## 📁 Project Structure
 
 ```
@@ -164,8 +90,6 @@ frontend/
 │   ├── App.tsx        # Application entry point
 │   ├── index.css      # CSS styling
 │   └── index.tsx      # Application entry point
-├── Dockerfile         # Production container
-├── Dockerfile.dev     # Development container
 ├── vite.config.ts     # Vite configuration
 ├── package.json       # Dependencies and scripts
 ├── .env.sample        # Environment template
@@ -176,20 +100,7 @@ frontend/
 
 ### Common Issues
 
-**1. Vite server not accessible in Docker:**
-```bash
-# Ensure Vite binds to 0.0.0.0, not localhost
-# In vite.config.ts:
-server: {
-  host: '0.0.0.0',
-  port: 3000
-}
-
-# Or in package.json:
-"dev": "vite --host 0.0.0.0 --port 3000"
-```
-
-**2. API calls failing:**
+**1. API calls failing:**
 ```bash
 # Check environment variable
 echo $VITE_SERVER_API_BASE_URL
@@ -198,81 +109,80 @@ echo $VITE_SERVER_API_BASE_URL
 curl http://localhost:8000/docs
 ```
 
-**3. Hot reloading not working in Docker:**
-```bash
-# Ensure volume is mounted correctly
--v $(pwd):/app
--v /app/node_modules  # Preserve node_modules
-```
-
-**4. Port conflicts:**
+**2. Port conflicts:**
 ```bash
 # Check what's using the port
 lsof -i :3000
 
-# Use different port
-docker run -p 3001:3000 frontend-dev
+# Kill process using the port
+sudo kill -9 $(lsof -ti:3000)
 ```
 
-### Debug Commands
-
+**3. Module not found errors:**
 ```bash
-# Check container status
-docker ps
-
-# View container logs
-docker logs frontend-dev-container
-
-# Access container shell
-docker exec -it frontend-dev-container sh
-
-# Test API connectivity from container
-docker exec -it frontend-dev-container curl http://host.docker.internal:8000/docs
+# Clear node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
 ```
 
 ### Reset Development Environment
 
 ```bash
-# Clean up containers
-docker stop frontend-dev-container
-docker rm frontend-dev-container
-
-# Clean up images
-docker rmi frontend-dev
-
-# Rebuild and restart
-npm install  # or docker build -f Dockerfile.dev -t frontend-dev .
-npm run dev  # or docker run commands above
+# Clean install
+rm -rf node_modules package-lock.json
+npm install
+npm run dev
 ```
 
 ## 🚀 Deployment
 
+### Vercel Deployment
+
+This project is configured for automatic deployment with Vercel:
+
+1. **Connect GitHub Repository**: Link your GitHub repository to Vercel
+2. **Set Root Directory**: Configure Vercel to deploy from `./frontend` directory
+3. **Environment Variables**: Add production environment variables in Vercel dashboard:
+   ```
+   VITE_SERVER_API_BASE_URL=https://your-production-api-url.com
+   ```
+4. **Auto Deploy**: Push to main branch triggers automatic deployment
+
+### Manual Vercel Setup
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy from frontend directory
+cd frontend
+vercel
+
+# Follow prompts to configure deployment
+```
+
 ### Building for Production
 
 ```bash
-# Local build
+# Local production build
 npm run build
-npm run preview  # Test production build
-
-# Docker build
-docker build -t frontend-prod .
-docker run -p 3000:3000 frontend-prod
+npm run preview  # Test production build locally
 ```
 
 ### Production Environment
 
-The production build creates optimized static files served by Nginx:
+The production build creates optimized static files:
 - Minified JavaScript and CSS
-- Gzip compression enabled
-- Efficient caching headers
-- Health check endpoint at `/health`
+- Tree-shaking for smaller bundle size
+- Efficient caching and CDN delivery via Vercel
+- Automatic HTTPS and global distribution
 
 ## 🔗 Related
 
 - **Backend API**: Located in `../backend/`
 - **Full Stack Setup**: See main project README
-- **Docker Compose**: For running frontend + backend together
+- **Vercel Dashboard**: Manage deployments and environment variables
 
 ---
 
-**Need help?** Check the main project README.
+**Need help?** Check the main project README or Vercel documentation.

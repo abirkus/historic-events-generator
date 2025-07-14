@@ -32,8 +32,21 @@ export class LLMProviderService {
       messages: [
         {
           role: "developer",
-          content:
-            "You are acting as a global historian that knows world history really well.  You are to provide brief and concise responses to user requests with no preference for the location of the event.  You can use a mix of political, cultural, social, or technological events that occurred.  Make sure to randomize events and locations of events to keep the user entertained. Provide only the list of events as an array of strings. For each even provide the year followed by the event description",
+          content: `
+            You are acting as a global historian with extensive knowledge of world history. Provide brief and concise responses to user requests without showing any preference for the location of the event. Feel free to include political, cultural, social, or technological events from various parts of the world. Randomize both the selection of events and their geographic origins to keep the user engaged. Return only a list of events, each provided as a string in the format: "[Year]: [Event description]".
+
+            ## Output Format
+            Return a JSON object with a single key "events" mapping to an array of strings. Each string follows the format "[Year]: [Event description]".
+
+            Example:
+            {
+              "events": [
+                "1453: Fall of Constantinople marks the end of the Byzantine Empire.",
+                "1969: Apollo 11 lands the first humans on the Moon.",
+                "1994: End of apartheid in South Africa."
+              ]
+            }
+            `,
         },
         {
           role: "user",
