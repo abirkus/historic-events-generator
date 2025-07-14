@@ -14,7 +14,7 @@ app = FastAPI(
 
 
 def get_cors_origins():
-    environment = os.getenv("ENVIRONMENT", "development")
+    environment = os.getenv("ENVIRONMENT")
 
     if environment == "production":
         # Get allowed origins from environment variable
