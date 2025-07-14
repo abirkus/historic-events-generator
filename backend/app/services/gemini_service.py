@@ -3,6 +3,7 @@ import json
 import logging
 from typing import List, Dict, Optional
 from google import genai
+from google.genai import types
 from .ai_service import AIService
 
 logger = logging.getLogger(__name__)
@@ -10,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 class GeminiService(AIService):
     def __init__(self, api_key: str):
-        genai.configure(api_key=api_key)
-        self.client = genai
+        # Create client with the new Google GenAI SDK
+        self.client = genai.Client(api_key=api_key)
 
     def clean_gemini_response(self, response_text: str) -> str:
         """
@@ -53,42 +54,34 @@ class GeminiService(AIService):
     async def chat_completion(
         self,
         messages: List[Dict[str, str]],
-        model: Optional[str] = "gemini-2.0-flash",
+        model: Optional[str] = "gemini-2.0-flash-001",  # Updated model name for new SDK
         temperature: Optional[float] = 0.7,
         max_tokens: Optional[int] = None,
     ) -> str:
         """
-        Get a chat completion from Gemini with response cleanup.
+        Get a chat completion from Gemini with response cleanup using the new GenAI SDK.
         """
         try:
-            # Convert OpenAI format to Gemini format
-            gemini_messages = self._convert_messages_to_gemini_format(messages)
+            # Convert OpenAI format to new GenAI SDK format
+            contents = self._convert_messages_to_genai_format(messages)
 
             # Configure generation parameters
-            generation_config = {
+            config_params = {
                 "temperature": min(temperature, 1.0),  # Gemini max is 1.0
             }
 
             if max_tokens:
-                generation_config["max_output_tokens"] = max_tokens
+                config_params["max_output_tokens"] = max_tokens
 
-            # Initialize the model
-            model_instance = genai.GenerativeModel(
-                model_name=model, generation_config=generation_config
+            config = types.GenerateContentConfig(**config_params)
+
+            logger.info(f"Sending message to Gemini: {str(contents)[:100]}...")
+
+            # Generate content using the new SDK
+            response = await self.client.aio.models.generate_content(
+                model=model, contents=contents, config=config
             )
 
-            # Start chat with history (all messages except the last one)
-            chat_history = gemini_messages[:-1] if len(gemini_messages) > 1 else []
-            chat = model_instance.start_chat(history=chat_history)
-
-            # Send the last message
-            last_message = (
-                gemini_messages[-1]["parts"][0]["text"] if gemini_messages else ""
-            )
-
-            logger.info(f"Sending message to Gemini: {last_message[:100]}...")
-
-            response = chat.send_message(last_message)
             raw_response = response.text
 
             logger.info(f"Raw Gemini response: {raw_response[:200]}...")
@@ -104,16 +97,24 @@ class GeminiService(AIService):
             logger.error(f"Gemini API error: {str(e)}")
             raise Exception(f"Gemini API error: {str(e)}")
 
-    def _convert_messages_to_gemini_format(
+    def _convert_messages_to_genai_format(
         self, messages: List[Dict[str, str]]
-    ) -> List[Dict]:
+    ) -> List[str]:
         """
-        Convert messages to Gemini's expected format.
+        Convert messages to the new GenAI SDK format.
+        The new SDK expects a simpler format - just the content strings.
         """
-        gemini_messages = []
+        contents = []
 
         for msg in messages:
-            role = "user" if msg["role"] == "user" else "model"
-            gemini_messages.append({"role": role, "parts": [{"text": msg["content"]}]})
+            # For the new SDK, we can just use the content directly
+            # The SDK handles the conversation flow automatically
+            contents.append(msg["content"])
 
-        return gemini_messages
+        # For multi-turn conversations, we join the messages
+        # The SDK will handle the conversation context automatically
+        return (
+            "\n".join(contents)
+            if len(contents) > 1
+            else contents[0] if contents else ""
+        )
