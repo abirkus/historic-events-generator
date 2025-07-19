@@ -7,6 +7,7 @@ import {
   Stack,
   Alert,
   Skeleton,
+  Link,
 } from "@mui/material";
 import { Article } from "@mui/icons-material";
 import { memo } from "react";
@@ -195,7 +196,9 @@ DateHeader.displayName = "DateHeader";
 const EventItem = memo(
   ({ event, isLast }: { event: string; isLast: boolean }) => {
     const { year, remainingText } = extractYearAndText(event.trim());
-
+    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(
+      event.trim()
+    )}`;
     return (
       <Box
         sx={{
@@ -205,12 +208,20 @@ const EventItem = memo(
           pb: !isLast ? 2 : 0,
         }}
       >
-        <Typography variant="body1" component="p" sx={eventTextSx}>
-          <Box component="span" sx={dropCapSx}>
-            {year}
-          </Box>
-          {remainingText}
-        </Typography>
+        <Link
+          href={searchUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          underline="hover"
+          color="inherit"
+        >
+          <Typography variant="body1" component="p" sx={eventTextSx}>
+            <Box component="span" sx={dropCapSx}>
+              {year}
+            </Box>
+            {remainingText}
+          </Typography>
+        </Link>
       </Box>
     );
   }
