@@ -4,3 +4,4 @@ __pycache__
 .env.production
 backend/htmlcov
 backend/.coverage
+.vscode
