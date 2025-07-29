@@ -178,14 +178,17 @@ def fix_common_json_issues(json_string: str) -> str:
     # Fix trailing commas
     json_string = re.sub(r",(\s*[}\]])", r"\1", json_string)
 
-    # Fix unescaped quotes in strings (basic fix)
-    json_string = re.sub(r'(?<!\\)"(?![,\]\}:\s])', r'\\"', json_string)
-
-    # Fix missing quotes around simple object keys
-    json_string = re.sub(r"(\w+):", r'"\1":', json_string)
-
-    # Fix single quotes to double quotes
+    # Fix single quotes to double quotes (do this before other quote fixes)
     json_string = re.sub(r"'([^']*)'", r'"\1"', json_string)
+
+    # Fix missing quotes around simple object keys (only for object keys, not array values)
+    # This regex is more specific - only matches word characters followed by colon
+    # and ensures we're likely in an object context
+    json_string = re.sub(r"([{\s,])(\w+):", r'\1"\2":', json_string)
+
+    # Remove the problematic unescaped quotes fix - it's too aggressive
+    # Instead, let's only fix quotes that are clearly problematic
+    # For example, unescaped quotes in the middle of strings (very rare case)
 
     return json_string
 
