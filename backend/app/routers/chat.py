@@ -3,13 +3,13 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 import logging
 
-from backend.app.services import get_service
-from backend.app.services.ai_service import AIService
-from backend.app.utils.provider_utils import (
+from app.services import get_service
+from app.services.ai_service import AIService
+from app.utils.provider_utils import (
     PROVIDER_CONFIG,
     normalize_messages_for_provider,
 )
-from backend.app.utils.response_cleanup import clean_ai_response
+from app.utils.response_cleanup import clean_ai_response
 
 from ..config import get_settings
 
