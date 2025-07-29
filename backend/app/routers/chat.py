@@ -1,11 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
-import os
 import logging
 
-from ..services import get_ai_service, AIService
-from ..services.utils.response_cleanup import clean_ai_response
+from backend.app.services import get_service
+from backend.app.services.ai_service import AIService
+from backend.app.utils.provider_utils import (
+    PROVIDER_CONFIG,
+    normalize_messages_for_provider,
+)
+from backend.app.utils.response_cleanup import clean_ai_response
+
 from ..config import get_settings
 
 router = APIRouter()
@@ -48,161 +53,6 @@ class ErrorResponse(BaseModel):
     error: str = Field(..., description="Error message")
     detail: Optional[str] = Field(None, description="Additional error details")
     provider: Optional[str] = Field(None, description="Provider that caused the error")
-
-
-# Provider configuration mapping
-PROVIDER_CONFIG = {
-    "openai": {
-        "default_models": ["gpt-4o-mini"],
-        "supported_roles": ["system", "user", "assistant", "function", "tool"],
-        "max_temperature": 2.0,
-    },
-    "gemini": {
-        "default_models": ["gemini-2.0-flash"],
-        "supported_roles": [
-            "user",
-            "model",
-        ],  # Gemini uses 'model' instead of 'assistant'
-        "max_temperature": 1.0,
-    },
-}
-
-
-def normalize_messages_for_provider(
-    messages: List[Dict[str, str]], provider: str
-) -> List[Dict[str, str]]:
-    """
-    Normalize message format for different providers.
-    Handles role mapping and custom roles.
-    """
-    if provider.lower() == "gemini":
-        # Convert OpenAI format to Gemini format
-        normalized = []
-        for msg in messages:
-            role = msg["role"]
-            content = msg["content"]
-
-            # Map roles for Gemini
-            if role in ["assistant", "model"]:
-                role = "model"
-            elif role == "system":
-                # Gemini doesn't have system role, prepend to first user message
-                if normalized and normalized[-1]["role"] == "user":
-                    normalized[-1][
-                        "content"
-                    ] = f"System: {content}\n\n{normalized[-1]['content']}"
-                else:
-                    normalized.append({"role": "user", "content": f"System: {content}"})
-                continue
-            elif role == "user":
-                role = "user"
-            else:
-                # Handle custom roles (developer, function, tool, etc.)
-                # For Gemini, treat custom roles as user messages with role prefix
-                logger.warning(
-                    f"Custom role '{role}' converted to 'user' for Gemini provider"
-                )
-                normalized.append(
-                    {"role": "user", "content": f"[{role.title()}]: {content}"}
-                )
-                continue
-
-            normalized.append({"role": role, "content": content})
-        return normalized
-
-    elif provider.lower() == "openai":
-        # OpenAI supports more roles but validate them
-        normalized = []
-        valid_openai_roles = ["system", "user", "assistant", "function", "tool"]
-
-        for msg in messages:
-            role = msg["role"]
-            content = msg["content"]
-
-            if role not in valid_openai_roles:
-                # Handle custom roles for OpenAI
-                logger.warning(
-                    f"Custom role '{role}' converted to 'user' for OpenAI provider"
-                )
-                normalized.append(
-                    {"role": "user", "content": f"[{role.title()}]: {content}"}
-                )
-            else:
-                normalized.append({"role": role, "content": content})
-
-        return normalized
-
-    # For other providers, return as-is with warning
-    logger.warning(
-        f"Unknown provider '{provider}', returning messages without normalization"
-    )
-    return messages
-
-
-def validate_provider_request(
-    provider: str, model: Optional[str], temperature: float
-) -> None:
-    """
-    Validate request parameters for the specific provider.
-    """
-    if provider not in PROVIDER_CONFIG:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unsupported provider: {provider}. Supported providers: {list(PROVIDER_CONFIG.keys())}",
-        )
-
-    config = PROVIDER_CONFIG[provider]
-
-    # Validate temperature
-    if temperature > config["max_temperature"]:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Temperature {temperature} exceeds maximum {config['max_temperature']} for {provider}",
-        )
-
-    # Validate model if specified
-    if model and model not in config["default_models"]:
-        logger.warning(
-            f"Model {model} not in default models for {provider}: {config['default_models']}"
-        )
-
-
-async def get_service(request: ChatRequest) -> AIService:
-    """
-    Get the appropriate AI service based on the request.
-    """
-    settings = get_settings()
-
-    # Determine provider
-    provider = (
-        request.provider.lower()
-        if request.provider
-        else settings.default_ai_provider.lower()
-    )
-
-    # Validate the request for this provider
-    validate_provider_request(provider, request.model, request.temperature)
-
-    # Get the appropriate API key
-    if provider == "openai":
-        api_key = settings.openai_api_key
-    elif provider == "gemini":
-        api_key = settings.gemini_api_key
-    else:
-        raise HTTPException(status_code=400, detail=f"Unsupported provider: {provider}")
-
-    if not api_key:
-        raise HTTPException(
-            status_code=500, detail=f"{provider.upper()}_API_KEY not configured"
-        )
-
-    try:
-        return get_ai_service(provider, api_key)
-    except Exception as e:
-        logger.error(f"Failed to initialize {provider} service: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to initialize {provider} service: {str(e)}"
-        )
 
 
 @router.get("/models", response_model=List[str])
