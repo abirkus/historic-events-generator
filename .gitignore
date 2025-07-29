@@ -2,3 +2,6 @@ __pycache__
 .venv
 .env
 .env.production
+backend/htmlcov
+backend/.coverage
+.vscode
