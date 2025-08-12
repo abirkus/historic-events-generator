@@ -1,188 +1,209 @@
-# Historic Events Generator Frontend
-### by Andre Birkus
+# Historic Events Generator - Frontend
 
-A **single-page application** built with Vite and React for interacting with AI models to obtain historic events based on user date input.
+A modern React application built with Vite that provides an intuitive interface for exploring historical events through AI-powered conversations.
 
-## 🚀 Quick Start
+## Features
 
-### Local Development
+- **Modern React Stack**: Built with Vite, TypeScript, and React 18
+- **AI Chat Interface**: Interactive conversations with multiple LLM providers
+- **Responsive Design**: Optimized for desktop and mobile experiences
+- **Fast Development**: Hot module replacement and instant feedback
+- **Production Ready**: Optimized builds with automatic deployment
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+
+### Installation
+
 ```bash
 # Install dependencies
 npm install
 
-# Start development server
-npm run dev
-
-# Access at http://localhost:3000
-```
-
-## 📋 Prerequisites
-
-- **Node.js** 18+ and **npm**
-
-### Environment Setup
-
-Create a `.env` file in the frontend directory:
-
-```bash
-# Copy from sample
+# Configure environment
 cp .env.sample .env
+# Edit .env with your backend URL
 
-# Edit with your values
-VITE_SERVER_API_BASE_URL=http://localhost:8000
-```
-
-## 🛠️ Available Commands
-
-| Command | Description |
-|---------|-------------|
-| `npm install` | Install dependencies |
-| `npm run dev` | Start development server (http://localhost:3000) |
-| `npm run build` | Build optimized production bundle |
-| `npm run preview` | Preview production build locally |
-| `npm run test` | Run unit tests |
-| `npm run lint` | Lint code with ESLint |
-| `npm run format` | Format code with Prettier |
-
-## 🌐 Environment Variables
-
-| Variable | Description | Development | Production |
-|----------|-------------|-------------|------------|
-| `VITE_SERVER_API_BASE_URL` | Backend API endpoint | `http://localhost:8000` | Your production API URL |
-| `NODE_ENV` | Environment mode | `development` | `production` |
-
-### Environment Files
-
-```bash
-# .env.development
-VITE_SERVER_API_BASE_URL=http://localhost:8000
-NODE_ENV=development
-
-# .env.production  
-VITE_SERVER_API_BASE_URL=https://your-api-domain.com
-NODE_ENV=production
-```
-
-## 🔧 Development Workflow
-
-### Local Development
-```bash
 # Start development server
 npm run dev
-
-# In another terminal, start backend
-# (or use Docker Compose for full stack)
-
-# Make changes to src/ files
-# Hot reloading will update automatically
 ```
 
-## 📁 Project Structure
+Access the application at `http://localhost:3000`
+
+### Environment Configuration
+
+| Variable | Required | Description | Default |
+|----------|----------|-------------|---------|
+| `VITE_SERVER_API_BASE_URL` | Yes | Backend API endpoint | `http://localhost:8000` |
+
+```bash
+# .env
+VITE_SERVER_API_BASE_URL=http://localhost:8000
+```
+
+## Development
+
+### Available Scripts
+
+```bash
+# Development server with hot reload
+npm run dev
+
+# Production build
+npm run build
+
+# Preview production build
+npm run preview
+
+# Run tests
+npm run test
+
+# Code quality
+npm run lint
+npm run format
+```
+
+### Project Structure
 
 ```
 frontend/
 ├── src/
-│   ├── assets/        # Custom UI images and icons
-│   ├── components/    # React components
-│   ├── pages/         # Page components
-│   ├── services/      # API service abstraction layer to interact with BE
-│   ├── App.css        # CSS styling
-│   ├── App.tsx        # Application entry point
-│   ├── index.css      # CSS styling
-│   └── index.tsx      # Application entry point
-├── vite.config.ts     # Vite configuration
-├── package.json       # Dependencies and scripts
-├── .env.sample        # Environment template
-└── README.md          
+│   ├── components/          # Reusable UI components
+│   ├── pages/              # Application pages
+│   ├── services/           # API client and utilities
+│   ├── assets/             # Static assets and images
+│   ├── App.tsx             # Main application component
+│   └── index.tsx           # Application entry point
+├── public/                 # Static public assets
+├── vite.config.ts          # Vite configuration
+└── package.json            # Dependencies and scripts
 ```
 
-## 🐛 Troubleshooting
+### Development Workflow
+
+1. **Start Backend**: Ensure the backend API is running on port 8000
+2. **Start Frontend**: Run `npm run dev` for development server
+3. **Make Changes**: Edit files in `src/` with instant hot reload
+4. **Test Changes**: Use the interactive interface to verify functionality
+
+## Deployment
+
+### Vercel (Recommended)
+
+Automatic deployment configured for Vercel:
+
+1. **Connect Repository**: Link GitHub repo to Vercel
+2. **Configure Root**: Set deployment directory to `./frontend`
+3. **Environment Variables**: Add production API URL
+4. **Deploy**: Push to main branch for automatic deployment
+
+```bash
+# Manual Vercel deployment
+npm i -g vercel
+cd frontend
+vercel
+```
+
+### Manual Build
+
+```bash
+# Create production build
+npm run build
+
+# Test production build locally
+npm run preview
+
+# Deploy dist/ folder to any static hosting
+```
+
+## Architecture
+
+### Component Structure
+
+- **Pages**: Route-level components (`Home`, `About`)
+- **Components**: Reusable UI elements (`Header`, `Footer`, `EventCard`)
+- **Services**: API abstraction layer for backend communication
+- **Assets**: Images, icons, and static resources
+
+### API Integration
+
+The frontend communicates with the backend through a clean service layer:
+
+```typescript
+// Example API call
+const response = await apiClient.sendMessage({
+  message: "What happened on June 28, 2023?",
+  provider: "openai"
+});
+```
+
+## Performance
+
+- **Vite Build Tool**: Lightning-fast development and optimized production builds
+- **Code Splitting**: Automatic route-based code splitting
+- **Tree Shaking**: Eliminates unused code for smaller bundles
+- **CDN Delivery**: Vercel provides global CDN distribution
+- **Lazy Loading**: Components and routes loaded on demand
+
+## Troubleshooting
 
 ### Common Issues
 
-**1. API calls failing:**
+**API Connection Failed**
 ```bash
-# Check environment variable
+# Verify environment variable
 echo $VITE_SERVER_API_BASE_URL
 
-# Verify backend is running
-curl http://localhost:8000/docs
+# Check backend status
+curl http://localhost:8000/api/health
 ```
 
-**2. Port conflicts:**
+**Port Already in Use**
 ```bash
-# Check what's using the port
+# Find process using port 3000
 lsof -i :3000
 
-# Kill process using the port
-sudo kill -9 $(lsof -ti:3000)
+# Kill the process
+kill -9 <PID>
 ```
 
-**3. Module not found errors:**
+**Module Resolution Errors**
 ```bash
-# Clear node_modules and reinstall
+# Clean installation
 rm -rf node_modules package-lock.json
 npm install
 ```
 
-### Reset Development Environment
+### Reset Environment
 
 ```bash
-# Clean install
+# Complete reset
 rm -rf node_modules package-lock.json
 npm install
 npm run dev
 ```
 
-## 🚀 Deployment
+## Contributing
 
-### Vercel Deployment
+1. Follow TypeScript and React best practices
+2. Use ESLint and Prettier for code formatting
+3. Test changes across different screen sizes
+4. Ensure accessibility standards are met
+5. Update documentation for new features
 
-This project is configured for automatic deployment with Vercel:
+## Technology Stack
 
-1. **Connect GitHub Repository**: Link your GitHub repository to Vercel
-2. **Set Root Directory**: Configure Vercel to deploy from `./frontend` directory
-3. **Environment Variables**: Add production environment variables in Vercel dashboard:
-   ```
-   VITE_SERVER_API_BASE_URL=https://your-production-api-url.com
-   ```
-4. **Auto Deploy**: Push to main branch triggers automatic deployment
-
-### Manual Vercel Setup
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy from frontend directory
-cd frontend
-vercel
-
-# Follow prompts to configure deployment
-```
-
-### Building for Production
-
-```bash
-# Local production build
-npm run build
-npm run preview  # Test production build locally
-```
-
-### Production Environment
-
-The production build creates optimized static files:
-- Minified JavaScript and CSS
-- Tree-shaking for smaller bundle size
-- Efficient caching and CDN delivery via Vercel
-- Automatic HTTPS and global distribution
-
-## 🔗 Related
-
-- **Backend API**: Located in `../backend/`
-- **Full Stack Setup**: See main project README
-- **Vercel Dashboard**: Manage deployments and environment variables
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite for fast development and builds
+- **Styling**: CSS with modern features
+- **Deployment**: Vercel for automatic CI/CD
+- **Code Quality**: ESLint, Prettier, TypeScript
 
 ---
 
-**Need help?** Check the main project README or Vercel documentation.
+**Live Demo**: Available through Vercel deployment  
+**Backend API**: Connects to FastAPI backend service  
+**Performance**: Optimized for fast loading and smooth interactions
