@@ -1,509 +1,352 @@
 # Historic Events Generator
 
-A full-stack application with FastAPI backend and Vite React frontend for generating and managing historic events.
+A modern full-stack application that generates AI-powered historical events and insights. Built with FastAPI backend and React frontend, supporting multiple LLM providers for rich historical conversations.
 
-## 🚀 Quick Start
+## Features
 
-### Local Development (Recommended)
+- **Multi-LLM Support**: OpenAI GPT and Google Gemini integration
+- **Modern Stack**: FastAPI backend + React/Vite frontend
+- **AI Conversations**: Interactive chat interface for historical exploration
+- **Production Ready**: AWS App Runner + Vercel deployment
+- **Developer Friendly**: Hot reload, comprehensive testing, modern tooling
+
+## Architecture
+
+The Historic Events Generator follows a modern microservices architecture with clear separation of concerns:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                USER BROWSER                                 │
+└─────────────────────────┬───────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         FRONTEND (Vercel)                                   │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────────────────┐  │
+│  │   React + Vite  │  │   Components    │  │      API Service Layer      │  │
+│  │   TypeScript    │  │   - Header      │  │   - ApiClient.ts            │  │
+│  │   Port 3000     │  │   - EventCard   │  │   - AxiosApiClient.ts       │  │
+│  │                 │  │   - Footer      │  │                             │  │
+│  └─────────────────┘  └─────────────────┘  └─────────────────────────────┘  │
+└─────────────────────────┬───────────────────────────────────────────────────┘
+                          │ HTTPS/REST API
+                          ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      BACKEND (AWS App Runner)                               │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────────────────┐  │
+│  │   FastAPI       │  │     Routers     │  │         Services            │  │
+│  │   UV + Python   │  │   - chat.py     │  │   - ai_service.py           │  │
+│  │   Port 8000     │  │   - health      │  │   - openai_service.py       │  │
+│  │                 │  │                 │  │   - gemini_service.py       │  │   
+│  └─────────────────┘  └─────────────────┘  └─────────────────────────────┘  │
+│                                                                             │
+│  ┌─────────────────┐  ┌─────────────────────────────────────────────────┐   │
+│  │     Models      │  │                Utils                            │   │
+│  │   - chat.py     │  │   - provider_utils.py                           │   │
+│  │   - schemas     │  │   - response_cleanup.py                         │   │
+│  └─────────────────┘  └─────────────────────────────────────────────────┘   │
+└─────────────────────────┬───────────────────────────────────────────────────┘
+                          │ API Calls
+                          ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          AI PROVIDERS                                       │
+│  ┌─────────────────────────────────┐  ┌─────────────────────────────────┐   │
+│  │           OpenAI GPT            │  │         Google Gemini           │   │
+│  │      Chat Completions API       │  │       Generative AI API         │   │
+│  │                                 │  │                                 │   │
+│  └─────────────────────────────────┘  └─────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+                          DEVELOPMENT TOOLS
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────────────────┐  │
+│  │ Docker Compose  │  │  UV Package Mgr │  │      Vite Dev Server        │  │
+│  │ Local Dev Stack │  │ Fast API Deps.  │  │    Hot Module Reload        │  │
+│  └─────────────────┘  └─────────────────┘  └─────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Data Flow
+1. **User** interacts with React frontend hosted on Vercel
+2. **Frontend** sends requests through API service layer to FastAPI backend
+3. **Backend** processes requests using routers and services
+4. **AI Services** call OpenAI or Gemini APIs for content generation
+5. **Response** flows back through the same path to the user
+
+### Component Breakdown
+- **Frontend (React)**: User interface with modular components and API service layer
+- **Backend (FastAPI)**: RESTful API with LLM integrations and business logic  
+- **AI Providers**: External APIs for generating historical content
+- **Development Tools**: Modern tooling for fast development and deployment
+
+## Quick Start
+
+### Prerequisites
+
+- **Node.js** 18+ and npm
+- **Python** 3.9+ and [UV package manager](https://docs.astral.sh/uv/)
+- **API Keys**: OpenAI and Google Gemini
+
+### Local Development
 
 ```bash
-# Clone and navigate to project
-git clone <your-repo-url>
+# Clone repository
+git clone <repository-url>
 cd historic-events-generator
 
-# Backend development
+# Backend setup
 cd backend
 uv sync
 cp .env.sample .env
-# Edit .env with your API keys
+# Add your API keys to .env
 uv run fastapi dev app/main.py
 
-# Frontend development (in new terminal)
-cd frontend
+# Frontend setup (new terminal)
+cd ../frontend
 npm install
 cp .env.sample .env
-# Edit .env with backend URL
+# Set VITE_SERVER_API_BASE_URL=http://localhost:8000
 npm run dev
 
-# Access the application
+# Access application
 # Frontend: http://localhost:3000
-# Backend API: http://localhost:8000
-# API Docs: http://localhost:8000/docs
+# Backend API: http://localhost:8000/docs
 ```
 
-### Docker Testing (Optional)
-
-```bash
-# Test full stack with Docker
-docker-compose up --build
-# Access the application
-# Frontend: http://localhost:3000
-# Backend API: http://localhost:8000
-```
-
-## 🏗️ Project Structure
-
-```
-historic-events-generator/
-├── frontend/                 # Vite React application
-│   ├── src/
-│   ├── package.json
-│   ├── Dockerfile           # Production build for Docker
-│   └── vercel.json          # Vercel deployment config
-├── backend/                 # FastAPI application
-│   ├── app/
-│   ├── pyproject.toml       # UV dependencies and config
-│   ├── uv.lock              # Locked dependency versions
-│   └── Dockerfile           # AWS App Runner deployment
-├── docker-compose.yml       # Local testing and Docker deployment
-├── deploy-to-app-runner.sh  # AWS App Runner deployment script
-├── .env.sample             # Environment template
-└── README.md               
-```
-
-## ⚡ Development Workflow
-
-### Backend Development (UV)
-
-```bash
-cd backend
-
-# First time setup
-uv sync
-cp .env.sample .env
-# Edit .env with your OpenAI and Gemini API keys
-
-# Daily development
-uv run fastapi dev app/main.py      # Development server with hot reload
-uv run fastapi run app/main.py      # Production server
-
-# Development tools
-uv run pytest                      # Run tests
-uv run black .                     # Format code
-uv run mypy .                      # Type checking
-uv run flake8                      # Lint code
-
-# Adding dependencies
-uv add requests                    # Add production dependency
-uv add --dev pytest-asyncio       # Add development dependency
-```
-
-### Frontend Development (NPM)
-
-```bash
-cd frontend
-
-# First time setup
-npm install
-cp .env.sample .env
-# Edit .env with backend URL (http://localhost:8000)
-
-# Daily development
-npm run dev                        # Development server with hot reload
-npm run build                     # Production build
-npm run preview                   # Preview production build
-
-# Development tools
-npm run test                      # Run tests
-npm run lint                      # Lint code
-npm run format                    # Format code with Prettier
-
-# Adding dependencies
-npm install axios                 # Add production dependency
-npm install --save-dev @types/node # Add development dependency
-```
-
-### Environment Setup
-
-**Backend (.env in ./backend/)**:
-```bash
-OPENAI_API_KEY=your_openai_api_key_here
-GEMINI_API_KEY=your_gemini_api_key_here
-ENVIRONMENT=development
-DEBUG=true
-PYTHONPATH=/app
-```
-
-**Frontend (.env in ./frontend/)**:
-```bash
-VITE_SERVER_API_BASE_URL=http://localhost:8000
-NODE_ENV=development
-```
-
-## 🚀 Deployment
-
-### Backend Deployment (AWS App Runner)
-
-The backend is deployed to AWS App Runner using a dedicated deployment script:
-
-```bash
-# Deploy backend to AWS App Runner
-./deploy-to-app-runner.sh
-
-# The script handles:
-# - Building AMD64 Docker image
-# - Pushing to AWS ECR
-# - Updating App Runner service
-# - Architecture compatibility (ARM64 → AMD64)
-```
-
-**Architecture Considerations:**
-- Apple M-series chips use ARM64 architecture
-- AWS App Runner requires AMD64 (x86_64) containers
-- The deployment script automatically handles cross-platform building
-
-### Frontend Deployment (Vercel)
-
-The frontend is automatically deployed via Vercel integration:
-
-1. **GitHub Integration**: Repository connected to Vercel
-2. **Root Directory**: Configured to deploy from `./frontend`
-3. **Auto Deploy**: Pushes to `main` branch trigger deployment
-4. **Environment Variables**: Configured in Vercel dashboard
-
-**Manual Vercel Setup** (if needed):
-```bash
-cd frontend
-npm i -g vercel
-vercel
-# Follow prompts to configure deployment
-```
-
-### Environment Variables for Production
-
-**AWS App Runner (Backend)**:
-- `OPENAI_API_KEY`: Your OpenAI API key
-- `GEMINI_API_KEY`: Your Google Gemini API key
-- `ENVIRONMENT`: `production`
-- `DEBUG`: `false`
-
-**Vercel (Frontend)**:
-- `VITE_SERVER_API_BASE_URL`: Your AWS App Runner backend URL
-
-## 🐳 Docker Usage (Local Testing)
-
-Docker is used for local testing and as a deployment option:
-
-### Local Testing
+### Docker (Optional)
 
 ```bash
 # Test full stack locally
 docker-compose up --build
 
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
+# Access at http://localhost:3000
 ```
 
-### Architecture Compatibility
+## Project Structure
+
+```
+historic-events-generator/
+├── frontend/                 # React + Vite application
+│   ├── src/
+│   │   ├── components/       # Reusable UI components
+│   │   ├── pages/           # Application pages
+│   │   └── services/        # API client layer
+│   ├── package.json
+│   └── Dockerfile
+├── backend/                 # FastAPI application
+│   ├── app/
+│   │   ├── routers/         # API endpoints
+│   │   ├── services/        # LLM integrations
+│   │   └── models/          # Data models
+│   ├── pyproject.toml       # UV dependencies
+│   └── Dockerfile
+├── docker-compose.yml       # Local development stack
+└── deploy-to-app-runner.sh  # AWS deployment script
+```
+
+## Development
+
+### Backend (FastAPI + UV)
 
 ```bash
-# Build for AMD64 (AWS compatibility)
-docker buildx build --platform linux/amd64 -t backend ./backend
-docker buildx build --platform linux/amd64 -t frontend ./frontend
+cd backend
 
-# Verify architecture
+# Development server
+uv run fastapi dev app/main.py
+
+# Testing and quality
+uv run pytest
+uv run black .
+uv run mypy .
+
+# Add dependencies
+uv add package-name
+```
+
+### Frontend (React + Vite)
+
+```bash
+cd frontend
+
+# Development server
+npm run dev
+
+# Testing and quality
+npm run test
+npm run lint
+npm run format
+
+# Add dependencies
+npm install package-name
+```
+
+## Environment Configuration
+
+### Backend (.env)
+```bash
+OPENAI_API_KEY=your_openai_key
+GEMINI_API_KEY=your_gemini_key
+ENVIRONMENT=development
+DEBUG=true
+```
+
+### Frontend (.env)
+```bash
+VITE_SERVER_API_BASE_URL=http://localhost:8000
+```
+
+## Deployment
+
+### Production Architecture
+
+- **Frontend**: Vercel (automatic deployment from main branch)
+- **Backend**: AWS App Runner (containerized deployment)
+- **Cross-Platform**: AMD64 Docker builds for AWS compatibility
+
+### Backend Deployment
+
+```bash
+# Deploy to AWS App Runner
+./deploy-to-app-runner.sh
+```
+
+### Frontend Deployment
+
+```bash
+# Automatic via Vercel integration
+git push origin main
+```
+
+### Environment Variables (Production)
+
+**AWS App Runner**:
+- `OPENAI_API_KEY`, `GEMINI_API_KEY`
+- `ENVIRONMENT=production`, `DEBUG=false`
+
+**Vercel**:
+- `VITE_SERVER_API_BASE_URL=<your-app-runner-url>`
+
+## API Documentation
+
+Interactive API documentation available when backend is running:
+
+- **Swagger UI**: `/docs`
+- **ReDoc**: `/redoc`
+- **OpenAPI Schema**: `/openapi.json`
+
+### Key Endpoints
+
+```bash
+# Health check
+GET /api/health
+
+# Chat with AI
+POST /api/chat/message
+{
+  "message": "What happened on June 28, 2023?",
+  "provider": "openai"
+}
+```
+
+## Testing
+
+```bash
+# Backend tests
+cd backend && uv run pytest --cov=app
+
+# Frontend tests
+cd frontend && npm run test
+
+# Integration testing
+docker-compose up --build
+curl http://localhost:8000/api/health
+curl http://localhost:3000
+```
+
+## Performance
+
+- **Fast Development**: UV package manager (10x faster than pip)
+- **Hot Reload**: Both frontend and backend support instant updates
+- **Optimized Builds**: Vite for frontend, UV for backend containers
+- **Production Ready**: CDN delivery, containerized deployment
+
+## Troubleshooting
+
+### Common Issues
+
+**API Connection Failed**
+```bash
+# Check backend status
+curl http://localhost:8000/api/health
+
+# Verify environment variables
+cd backend && uv run python -c "import os; print('API Keys:', bool(os.getenv('OPENAI_API_KEY')))"
+```
+
+**Port Conflicts**
+```bash
+# Check port usage
+lsof -i :3000 :8000
+
+# Kill processes if needed
+sudo kill -9 $(lsof -ti:3000,8000)
+```
+
+**Docker Architecture Issues**
+```bash
+# Verify AMD64 build for AWS
 docker inspect backend | grep Architecture
 # Should show: "Architecture": "amd64"
 ```
 
-### Service-Specific Commands
+### Reset Environment
 
 ```bash
-# Individual service logs
-docker-compose logs -f backend     # Backend logs only
-docker-compose logs -f frontend    # Frontend logs only
+# Backend reset
+cd backend && rm -rf .venv && uv sync
 
-# Rebuild individual services
-docker-compose build backend       # Rebuild backend only
-docker-compose build frontend      # Rebuild frontend only
+# Frontend reset
+cd frontend && rm -rf node_modules && npm install
 
-# Access containers
-docker exec -it chronicles-backend /bin/bash
-docker exec -it chronicles-frontend /bin/sh
+# Docker reset
+docker-compose down -v && docker-compose up --build
 ```
 
-## 🔧 Configuration
+## Contributing
 
-### Port Configuration
-
-| Service | Local Development | Docker | Production |
-|---------|------------------|--------|------------|
-| Frontend | 3000 (Vite) | 3000 | 443 (Vercel) |
-| Backend | 8000 (FastAPI) | 8000 | 443 (App Runner) |
-
-### Environment Variables
-
-| Variable | Description | Local Dev | Production |
-|----------|-------------|-----------|------------|
-| `VITE_SERVER_API_BASE_URL` | Backend API URL | `http://localhost:8000` | App Runner URL |
-| `OPENAI_API_KEY` | OpenAI API key | Required | Required |
-| `GEMINI_API_KEY` | Gemini API key | Required | Required |
-| `ENVIRONMENT` | Runtime environment | `development` | `production` |
-| `DEBUG` | Debug mode | `true` | `false` |
-
-## 🐛 Troubleshooting
-
-### Common Development Issues
-
-**1. Backend not starting:**
-```bash
-cd backend
-# Check UV environment
-uv info
-
-# Reinstall dependencies
-rm -rf .venv
-uv sync
-
-# Check environment variables
-uv run python -c "import os; print('OpenAI:', bool(os.getenv('OPENAI_API_KEY')))"
-```
-
-**2. Frontend not connecting to backend:**
-```bash
-cd frontend
-# Check environment variables
-cat .env
-# Should have: VITE_SERVER_API_BASE_URL=http://localhost:8000
-
-# Verify backend is running
-curl http://localhost:8000/api/health
-```
-
-**3. Port conflicts:**
-```bash
-# Check what's using the ports
-lsof -i :3000
-lsof -i :8000
-
-# Kill processes if needed
-sudo kill -9 $(lsof -ti:3000)
-sudo kill -9 $(lsof -ti:8000)
-```
-
-### Docker Issues
-
-**4. Architecture mismatch:**
-```bash
-# Check image architecture
-docker inspect backend | grep Architecture
-
-# Rebuild for correct architecture
-docker buildx build --platform linux/amd64 -t backend ./backend
-```
-
-**5. Container startup failures:**
-```bash
-# Check logs
-docker-compose logs backend
-docker-compose logs frontend
-
-# Rebuild containers
-docker-compose down
-docker-compose up --build
-```
-
-### Reset Development Environment
-
-```bash
-# Reset backend
-cd backend
-rm -rf .venv
-uv sync
-
-# Reset frontend
-cd frontend
-rm -rf node_modules package-lock.json
-npm install
-
-# Reset Docker (if using)
-docker-compose down -v
-docker system prune -a
-docker-compose up --build
-```
-
-## 🧪 Testing
-
-### Backend Testing
-
-```bash
-cd backend
-uv run pytest                     # Run all tests
-uv run pytest --cov=app          # Run with coverage
-uv run pytest tests/test_main.py # Run specific test
-```
-
-### Frontend Testing
-
-```bash
-cd frontend
-npm run test                      # Run all tests
-npm run test -- --coverage       # Run with coverage
-npm run test -- --watch          # Run in watch mode
-```
-
-### Integration Testing
-
-```bash
-# Start both services locally
-cd backend && uv run fastapi dev app/main.py &
-cd frontend && npm run dev &
-
-# Test API endpoints
-curl http://localhost:8000/api/health
-curl http://localhost:8000/docs
-
-# Test frontend
-curl http://localhost:3000
-```
-
-## 📚 API Documentation
-
-When the backend is running, API documentation is available at:
-- **Local Development**: http://localhost:8000/docs
-- **Production**: https://your-app-runner-url.com/docs
-
-Documentation formats:
-- **Swagger UI**: `/docs`
-- **ReDoc**: `/redoc`
-- **OpenAPI JSON**: `/openapi.json`
-
-## 🔄 Development Best Practices
-
-### Daily Workflow
-
-1. **Start backend**: `cd backend && uv run fastapi dev app/main.py`
-2. **Start frontend**: `cd frontend && npm run dev`
-3. **Make changes** with hot reload enabled
-4. **Run tests** before committing
-5. **Commit and push** to trigger deployments
-
-### Code Quality
-
-```bash
-# Backend (UV)
-cd backend
-uv run black .                    # Format
-uv run mypy .                     # Type check
-uv run flake8                     # Lint
-uv run pytest                     # Test
-
-# Frontend (NPM)
-cd frontend
-npm run format                    # Format with Prettier
-npm run lint                      # Lint with ESLint
-npm run test                      # Test with Vitest
-```
-
-### Dependency Management
-
-**Backend**:
-```bash
-uv add package-name               # Add dependency
-uv add --dev package-name         # Add dev dependency
-uv lock                          # Update lock file
-```
-
-**Frontend**:
-```bash
-npm install package-name          # Add dependency
-npm install --save-dev package-name # Add dev dependency
-```
-
-## 🚀 Production Monitoring
-
-### Health Checks
-
-- **Backend Health**: https://your-app-runner-url.com/api/health
-- **Frontend**: Vercel automatically monitors deployment health
-
-### Logs and Monitoring
-
-- **AWS App Runner**: CloudWatch logs for backend
-- **Vercel**: Function logs and analytics dashboard
-- **Local Docker**: `docker-compose logs -f`
-
-## 🤝 Contributing
-
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Start development servers**:
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Start development servers:
    ```bash
    cd backend && uv run fastapi dev app/main.py &
    cd frontend && npm run dev &
    ```
-4. **Make your changes** (hot reload enabled)
-5. **Test locally**: Verify both frontend and backend work
-6. **Run quality checks**:
-   ```bash
-   cd backend && uv run pytest && uv run black . && uv run mypy .
-   cd frontend && npm run test && npm run lint
-   ```
-7. **Commit your changes**: `git commit -m 'Add amazing feature'`
-8. **Push to branch**: `git push origin feature/amazing-feature`
-9. **Open a Pull Request**
+4. Make changes with hot reload enabled
+5. Run tests: `uv run pytest` and `npm run test`
+6. Commit and push: `git commit -m 'Add feature'`
+7. Open a Pull Request
 
-## 📋 Deployment Checklist
+## Technology Stack
 
-### Before Deploying
+### Backend
+- **Framework**: FastAPI with async support
+- **Package Manager**: UV for fast dependency management
+- **LLM Integration**: OpenAI GPT, Google Gemini
+- **Deployment**: AWS App Runner with Docker
 
-- [ ] **Backend tests pass**: `cd backend && uv run pytest`
-- [ ] **Frontend tests pass**: `cd frontend && npm run test`
-- [ ] **Environment variables configured** in AWS and Vercel
-- [ ] **API keys valid** and have sufficient quotas
-- [ ] **CORS configured** for production frontend URL
-- [ ] **Docker builds succeed** for AMD64 architecture
+### Frontend
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite for fast development and builds
+- **Styling**: Modern CSS with responsive design
+- **Deployment**: Vercel with automatic CI/CD
 
-### Deployment Process
-
-1. **Backend**: Run `./deploy-to-app-runner.sh`
-2. **Frontend**: Push to `main` branch (auto-deploys via Vercel)
-3. **Verify**: Test production URLs and API endpoints
-4. **Monitor**: Check logs for any deployment issues
-
-## 🆘 Getting Help
-
-If you encounter issues:
-
-1. **Check logs**:
-   - Local: `uv run fastapi dev app/main.py` or `npm run dev`
-   - Docker: `docker-compose logs -f`
-   - Production: AWS CloudWatch or Vercel dashboard
-
-2. **Verify environment**:
-   - Check `.env` files exist and have correct values
-   - Verify API keys are valid
-   - Confirm services are running on expected ports
-
-3. **Try reset procedures** above
-
-4. **Create an issue** with:
-   - Error messages and logs
-   - Steps to reproduce
-   - Environment details (OS, Node version, UV version)
+### Infrastructure
+- **Containerization**: Docker with multi-platform builds
+- **Local Development**: Docker Compose for full stack testing
+- **Monitoring**: Health checks and comprehensive logging
 
 ---
 
-**Happy coding! 🚀**
-
-### Quick Reference
-
-```bash
-# Start development
-cd backend && uv run fastapi dev app/main.py &
-cd frontend && npm run dev &
-
-# Deploy
-./deploy-to-app-runner.sh          # Backend to AWS
-git push origin main               # Frontend to Vercel (auto)
-
-# Test with Docker
-docker-compose up --build
-
-# Reset everything
-cd backend && rm -rf .venv && uv sync
-cd frontend && rm -rf node_modules && npm install
-```
+**Live Demo**: Available through production deployment  
+**Documentation**: Comprehensive API docs and component libraries  
+**Support**: Issues and discussions welcome in the repository
