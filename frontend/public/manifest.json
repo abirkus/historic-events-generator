@@ -1,0 +1,51 @@
+{
+  "name": "Historic Events Generator",
+  "short_name": "Chronicle Explorer",
+  "description": "Explore history through AI conversations. Discover what happened on any date with our intelligent chat interface.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "categories": ["education", "utilities", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/src/assets/chronicle-explorer.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/src/assets/chronicle-explorer.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Historic Events Generator",
+      "short_name": "Historic Events Generator",
+      "description": "Research historical events using AI",
+      "url": "/?chat=true",
+      "icons": [
+        {
+          "src": "/src/assets/chronicle-explorer.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/src/assets/chronicle-explorer.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Historic Events Generator - Chat Interface"
+    }
+  ]
+}

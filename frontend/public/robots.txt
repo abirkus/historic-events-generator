@@ -1,0 +1,20 @@
+# Robots.txt for Historic Events Generator
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.historicevents.ai/sitemap.xml
+
+# Block common bot paths
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /private/
+
+# Allow important paths
+Allow: /
+Allow: /about
+Allow: /home
+
+# Crawl delay for polite bots
+Crawl-delay: 1
