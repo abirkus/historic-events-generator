@@ -3,12 +3,34 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "description": "React app for generating historic events",
+  "description": "AI-powered React application for exploring historical events through intelligent conversations with OpenAI and Google Gemini",
+  "keywords": [
+    "history",
+    "AI",
+    "historical events",
+    "OpenAI",
+    "Gemini",
+    "chat",
+    "education",
+    "react",
+    "vite",
+    "typescript"
+  ],
+  "homepage": "https://www.historicevents.ai/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abirkus/historic-events-generator.git",
+    "directory": "frontend"
+  },
+  "bugs": {
+    "url": "https://github.com/abirkus/historic-events-generator/issues"
+  },
   "author": {
     "name": "Andre Birkus",
     "email": "birkusandre@gmail.com",
     "url": "https://github.com/abirkus"
   },
+  "license": "MIT",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 3000",
     "build": "tsc -b && vite build",
